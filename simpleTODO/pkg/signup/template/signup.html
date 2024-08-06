@@ -1,8 +1,24 @@
-<html>
-    <head>
-        <title>Test</title>
-    </head>
-    <body>
-        <h1>Test Text</h1>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Signup Page</title>
+    <link rel="stylesheet" href="/static/singuppage.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Up</h1>
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p class="message">Already have an account?<a href="#">Login</a></p>
+    </div>
+</body>
 </html>
