@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 	"net/http"
+	"todoproject/pkg/signup"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -10,6 +11,6 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	case "/", "/home":
 		fmt.Fprintf(w, "This is home")
 	case "/signup":
-		fmt.Fprintf(w, "This is signup")
+		signup.SignupPageHander(w, r)
 	}
 }
