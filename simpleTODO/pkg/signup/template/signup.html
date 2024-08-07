@@ -32,6 +32,9 @@
                 <label for="email">Email:</label>
                 <input type="text" id="email" name="email" required>
             </div>
+            <input type="hidden" name="csrf-token" value={{.Csrf_token}}>
+            <div class="form-group">
+            </div>
             <button type="submit">Sign Up</button>
         </form>
         <p class="message">Already have an account?<a href="#">Login</a></p>
