@@ -25,3 +25,13 @@ var DB *sql.DB
 func Create_database() {
 	DB, _ = connect()
 }
+
+//CRUD
+//Create
+func CreateUser(db *sql.DB, username string, password string, first_name string, last_name string, email string, phone_number string) {
+	_, err := db.Exec("INSERT INTO users (username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?)", username, password, first_name, last_name, email, phone_number)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Record created successfully")
+}
