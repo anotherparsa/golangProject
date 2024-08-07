@@ -28,11 +28,18 @@ func Create_database() {
 
 //CRUD
 //Create
-func CreateUser(db *sql.DB, username string, password string, first_name string, last_name string, email string, phone_number string) {
-	_, err := db.Exec("INSERT INTO users (username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?)", username, password, first_name, last_name, email, phone_number)
+func CreateUser(db *sql.DB, userId string, username string, password string, first_name string, last_name string, email string, phone_number string) {
+	_, err := db.Exec("INSERT INTO users (userId, username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)", userId, username, password, first_name, last_name, email, phone_number)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println("Record created successfully")
 }
 
+func CreateSession(db *sql.DB, session_id string, user_id string) {
+	_, err := db.Exec("INSERT INTO sessions (sessionId, userId) VALUES (?, ?)", session_id, user_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Record created successfully")
+}

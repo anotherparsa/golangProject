@@ -32,7 +32,16 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	if sent_csrf_token != csrf_token {
 		fmt.Fprintf(w, "Invalid CSRF token")
 	} else {
-		databasetools.CreateUser(databasetools.DB, username, password, firstname, lastname, email, phonenumber)
+		_, err := r.Cookie("session")
+		if err != nil {
+			userId := tools.GenerateUUID()
+			sessionId := tools.GenerateUUID()
+			http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
+			databasetools.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
+			databasetools.CreateSession(databasetools.DB, sessionId, userId)
+		} else {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+		}
 	}
 
 }
