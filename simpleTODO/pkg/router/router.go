@@ -12,5 +12,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "This is home")
 	case "/signup":
 		signup.SignupPageHander(w, r)
+	case "/signupprocess":
+		signup.SignupProcessHandler(w, r)
 	}
 }
