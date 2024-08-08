@@ -43,3 +43,21 @@ func CreateSession(db *sql.DB, session_id string, user_id string) {
 	}
 	fmt.Println("Record created successfully")
 }
+
+//Read
+// Read records
+func ReadSessions(db *sql.DB) {
+	rows, err := db.Query("SELECT sessionId, userId FROM sessions")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var sessionId string
+		var userId string
+		if err := rows.Scan(&sessionId, &userId); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("sessionId: %s, userId: %s\n", sessionId, userId)
+	}
+}
