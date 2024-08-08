@@ -46,6 +46,21 @@ func CreateSession(db *sql.DB, session_id string, user_id string) {
 
 //Read
 // Read records
+func WhoIsThis(db *sql.DB,, factor string, value string) {
+	rows, err := db.Query("SELECT username FROM users WHERE ?=?", factor, value)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var factor string
+		if err := rows.Scan(&factor); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("username: %s", factor)
+	}
+}
+
 func ReadSessions(db *sql.DB) {
 	rows, err := db.Query("SELECT sessionId, userId FROM sessions")
 	if err != nil {
