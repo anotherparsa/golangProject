@@ -33,7 +33,7 @@ func CreateUser(db *sql.DB, userId string, username string, password string, fir
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Record created successfully")
+	fmt.Println("User created successfully")
 }
 
 func CreateSession(db *sql.DB, session_id string, user_id string) {
@@ -41,25 +41,47 @@ func CreateSession(db *sql.DB, session_id string, user_id string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Record created successfully")
+	fmt.Println("Session created successfully")
+}
+
+func CreateTasks(db *sql.DB, author string, priority string, title string, description string) {
+	_, err := db.Exec("INSERT INTO tasks (author, priority, title, description, isdone) VALUES (?, ?, ?, ?, ?)", author, priority, title, description, "0")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Task created successfully")
 }
 
 //Read
 // Read records
-/*func WhoIsThis(db *sql.DB,, factor string, value string) {
-	rows, err := db.Query("SELECT username FROM users WHERE ?=?", factor, value)
+func WhoIsThis(db *sql.DB, session_id string) string {
+	var user_id string
+	var usrename string
+	rows, err := db.Query("SELECT userId FROM sessions WHERE sessionId=?", session_id)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var factor string
-		if err := rows.Scan(&factor); err != nil {
+		if err := rows.Scan(&user_id); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("username: %s", factor)
+		fmt.Printf("Passed Session id %v \ncorresponding user id %v \n", session_id, user_id)
 	}
-}*/
+
+	rows, err = db.Query("SELECT username FROM users WHERE userId=?", user_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&usrename); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("Retrieved userid id %v \ncorresponding username %v \n", user_id, username)
+	}
+	return username
+}
 
 func ReadSessions(db *sql.DB) {
 	rows, err := db.Query("SELECT sessionId, userId FROM sessions")

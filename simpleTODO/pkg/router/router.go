@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"todoproject/pkg/home"
 	"todoproject/pkg/signup"
+	"todoproject/pkg/task"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,5 +15,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		signup.SignupPageHander(w, r)
 	case "/signupprocess":
 		signup.SignupProcessHandler(w, r)
+	case "/createtaskprocess":
+		task.CreateTaskProcessor(w, r)
 	}
 }

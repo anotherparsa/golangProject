@@ -42,6 +42,8 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
+
 
 }
