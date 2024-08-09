@@ -23,7 +23,7 @@ func SignupPageHander(w http.ResponseWriter, r *http.Request) {
 func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.Form.Get("username")
-	password := r.Form.Get("password")
+	password := tools.HashThis(r.Form.Get("password"))
 	firstname := r.Form.Get("firstName")
 	lastname := r.Form.Get("lastName")
 	phonenumber := r.Form.Get("phoneNumber")
