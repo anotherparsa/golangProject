@@ -3,8 +3,10 @@ package home
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"todoproject/pkg/databasetools"
+	"todoproject/pkg/task"
 )
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +18,11 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		username := databasetools.WhoIsThis(databasetools.DB, session_id)
 		fmt.Println(username)
 		t, _ := template.ParseFiles("../../pkg/home/template/home.html")
-		t.Execute(w, nil)
+		tasks, err := task.GetUsersTask(databasetools.DB, username)
+		if err != nil {
+			log.Fatal(err)
+		}
+		t.Execute(w, tasks)
+
 	}
 }
