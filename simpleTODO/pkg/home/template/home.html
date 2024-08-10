@@ -3,53 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static To-Do App</title>
     <link rel="stylesheet" href="/static/homestyle.css">
+    <title>To-Do App</title>
 </head>
 <body>
-    <div class="header">
-        <button>Button 1</button>
-        <button>Button 2</button>
-        <button>Button 3</button>
-        <button>Button 4</button>
-        <button>Button 5</button>
-    </div>
-
     <div class="container">
-        <h1>To-Do List</h1>
+        <h1>To-Do App</h1>
+        <div class="buttons">
+            <button>Button 1</button>
+            <button>Button 2</button>
+            <button>Button 3</button>
+            <button>Button 4</button>
+            <button>Button 5</button>
+        </div>
 
-        <form class="task-form" action="/createtaskprocess" method="post">
-            <label for="task-title">Task Title:</label>
-            <input type="text" id="task-title" name="title" placeholder="Enter task title" required>
-            
-            <label for="task-desc">Description:</label>
-            <input type="text" id="task-desc" name="description" placeholder="Enter task description" required>
-            
-            <label for="task-priority">Priority:</label>
-            <select id="task-priority" name="priority">
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select>
-
-            <button type="submit">Add Task</button>
+        <form action="/createtaskprocess" method="post">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter task title">
+            </div>
+    
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" placeholder="Enter task description">
+            </div>
+    
+            <div class="form-group">
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priority">
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+    
+            <button type="submit" id="submit">Add Task</button>
+    
         </form>
 
 
-        <div class="task-list">
-
+        <div class="tasks">
             {{range .}}
             <div class="task">
-                <strong>Title: </strong><
-                <h2>{{.Title}}</h2>
-                <strong>Description:</strong>
-                <h2>{{.Description}}</h2>
-                <strong>Priotity:</strong>
-                <h2>{{.Priority}}</h2>
-                <strong>Completed:</strong>
-                <h2>{{.IsDone}}</h2>
+                <h3>Title: </h3>
+                <p>{{.Title}}</p><br>
+                <h3>Description: </h3>
+                <p>{{.Description}}</p><br>
+                <h3>Priority: </h3>
+                <p>{{.Priority}}</p><br>
+                <h3>Completed: </h3>
+                <p>{{.IsDone}}</p><br>
+                <button><a href="/deletetask/{{.Id}}">Delete</a></button>
+                <button>Edit</button>
             </div>
             {{end}}
+        </div>
+
 
         </div>
     </div>

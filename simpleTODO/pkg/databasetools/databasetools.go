@@ -98,3 +98,12 @@ func ReadSessions(db *sql.DB) {
 		fmt.Printf("sessionId: %s, userId: %s\n", sessionId, userId)
 	}
 }
+
+//Delete
+func DeleteTask(db *sql.DB, id string) {
+	_, err := db.Exec("DELETE FROM tasks WHERE id=?", id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Task created successfully")
+}

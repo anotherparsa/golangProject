@@ -1,21 +1,28 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"todoproject/pkg/home"
 	"todoproject/pkg/signup"
 	"todoproject/pkg/task"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/", "/home":
+	urlPath := r.URL.Path
+	if urlPath == "/" || urlPath == "/home" {
 		home.HomePageHandler(w, r)
-	case "/signup":
+	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
-	case "/signupprocess":
+	} else if urlPath == "/signupprocess" {
 		signup.SignupProcessHandler(w, r)
-	case "/createtaskprocess":
+	} else if urlPath == "/createtaskprocess" {
 		task.CreateTaskProcessor(w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/deletetask/") {
+		task.DeleteTask(w, r)
+	} else {
+		fmt.Fprintf(w, "Page not found")
 	}
+
 }
