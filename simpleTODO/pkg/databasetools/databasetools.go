@@ -66,7 +66,6 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 		if err := rows.Scan(&user_id); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("Passed Session id %v \ncorresponding user id %v \n", session_id, user_id)
 	}
 
 	rows, err = db.Query("SELECT username FROM users WHERE userId=?", user_id)
@@ -78,7 +77,6 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 		if err := rows.Scan(&usrename); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("Retrieved userid id %v \ncorresponding username %v \n", user_id, username)
 	}
 	return username
 }
@@ -95,7 +93,6 @@ func ReadSessions(db *sql.DB) {
 		if err := rows.Scan(&sessionId, &userId); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("sessionId: %s, userId: %s\n", sessionId, userId)
 	}
 }
 
@@ -105,5 +102,15 @@ func DeleteTask(db *sql.DB, id string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Task created successfully")
+	fmt.Println("Task Deleted successfully")
+}
+
+//update task
+func EditTask(db *sql.DB, id string, newTitle string, newDescription string, newPriority string) {
+	_, err := db.Exec("UPDATE tasks set priority=?, title=?, description=? WHERE id=?", newPriority, newTitle, newDescription, id)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("we've go an error")
+	}
+	fmt.Println("Task Updated successfully")
 }

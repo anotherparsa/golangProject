@@ -53,8 +53,8 @@
                 <p>{{.Priority}}</p><br>
                 <h3>Completed: </h3>
                 <p>{{.IsDone}}</p><br>
-                <button><a href="/deletetask/{{.Id}}">Delete</a></button>
-                <button>Edit</button>
+                <a href="/deletetask/{{.Id}}"><button>Delete</button></a>
+                <a href="/edittask/{{.Id}}"><button>Edit</button></a>
             </div>
             {{end}}
         </div>

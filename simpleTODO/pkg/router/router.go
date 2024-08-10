@@ -21,6 +21,10 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		task.CreateTaskProcessor(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/deletetask/") {
 		task.DeleteTask(w, r)
+	} else if urlPath == "/edittaskprocessor" {
+		task.EditTask(w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/edittask/") {
+		task.EditTaskPageHandler(w, r)
 	} else {
 		fmt.Fprintf(w, "Page not found")
 	}

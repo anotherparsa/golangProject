@@ -2,6 +2,8 @@ package task
 
 import (
 	"database/sql"
+	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 	"todoproject/pkg/databasetools"
@@ -13,12 +15,6 @@ type Task struct {
 	Title       string
 	Description string
 	IsDone      string
-}
-
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	taskID := strings.TrimPrefix(r.URL.Path, "/deletetask/")
-	databasetools.DeleteTask(databasetools.DB, taskID)
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
@@ -52,4 +48,43 @@ func GetUsersTask(db *sql.DB, username string) ([]Task, error) {
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
+}
+
+func GetUserTaskByTaskID(db *sql.DB, id string) Task {
+	rows, err := db.Query("SELECT id, priority, title, description, isDone FROM tasks WHERE id=?", id)
+	var t Task
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&t.Id, &t.Priority, &t.Title, &t.Description, &t.IsDone); err != nil {
+			fmt.Println(err)
+		}
+	}
+	return t
+
+}
+
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	taskID := strings.TrimPrefix(r.URL.Path, "/deletetask/")
+	databasetools.DeleteTask(databasetools.DB, taskID)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func EditTask(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	id := r.Form.Get("id")
+	newTitle := r.Form.Get("title")
+	newDescription := r.Form.Get("description")
+	newPriority := r.Form.Get("priority")
+	databasetools.EditTask(databasetools.DB, id, newTitle, newDescription, newPriority)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func EditTaskPageHandler(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("../../pkg/task/template/edittask.html")
+	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+	task := GetUserTaskByTaskID(databasetools.DB, taskID)
+	t.Execute(w, task)
 }

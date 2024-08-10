@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/homestyle.css">
+    <title>Edit task</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit your task</h1>
+        <form action="/edittaskprocessor" method="post">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" value={{.Title}}>
+                <input type="hidden" name="id" value={{.Id}}>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" value={{.Description}}>
+            </div>
+    
+            <div class="form-group">
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priority">
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+
+    
+            <button type="submit" id="submit">Update Task</button>
+    
+        </form>
+        </div>
+    </div>
+</body>
+</html>

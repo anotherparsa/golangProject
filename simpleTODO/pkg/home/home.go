@@ -1,7 +1,6 @@
 package home
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,7 +15,6 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		session_id := cookie.Value
 		username := databasetools.WhoIsThis(databasetools.DB, session_id)
-		fmt.Println(username)
 		t, _ := template.ParseFiles("../../pkg/home/template/home.html")
 		tasks, err := task.GetUsersTask(databasetools.DB, username)
 		if err != nil {
