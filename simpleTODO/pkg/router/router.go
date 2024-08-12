@@ -8,6 +8,7 @@ import (
 	"todoproject/pkg/login"
 	"todoproject/pkg/signup"
 	"todoproject/pkg/task"
+	"todoproject/pkg/tools"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +17,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		home.HomePageHandler(w, r)
 	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
+	} else if urlPath == "/logout" {
+		tools.Logout(w, r)
 	} else if urlPath == "/login" {
 		login.LoginPageHandler(w, r)
 	} else if urlPath == "/signupprocess" {
