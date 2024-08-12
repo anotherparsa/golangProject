@@ -24,6 +24,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		author := databasetools.WhoIsThis(databasetools.DB, cookie.Value)
+		fmt.Printf("Author is %v ", author)
 		priority := r.Form.Get("priority")
 		title := r.Form.Get("title")
 		description := r.Form.Get("description")

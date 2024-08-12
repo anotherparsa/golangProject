@@ -55,8 +55,9 @@ func CreateTasks(db *sql.DB, author string, priority string, title string, descr
 //Read
 // Read records
 func WhoIsThis(db *sql.DB, session_id string) string {
+	fmt.Printf("Passed session id : %v\n", session_id)
 	var user_id string
-	var usrename string
+	var username string
 	rows, err := db.Query("SELECT userId FROM sessions WHERE sessionId=?", session_id)
 	if err != nil {
 		fmt.Println(err)
@@ -67,17 +68,18 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-
+	fmt.Printf("Found user id : %v\n", user_id)
 	rows, err = db.Query("SELECT username FROM users WHERE userId=?", user_id)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&usrename); err != nil {
+		if err := rows.Scan(&username); err != nil {
 			fmt.Println(err)
 		}
 	}
+	fmt.Printf("Found user name : %v\n", username)
 	return username
 }
 
