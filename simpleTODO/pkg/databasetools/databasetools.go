@@ -114,3 +114,39 @@ func EditTask(db *sql.DB, id string, newTitle string, newDescription string, new
 	}
 	fmt.Println("Task Updated successfully")
 }
+
+func ValidateUser(db *sql.DB, username string, password string) bool {
+	rows, err := db.Query("SELECT password FROM users where username=?", username)
+	fmt.Printf("The user name passed in validate user is %v \n and the password is %v \n", username, password)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		fmt.Println("User Not found in validate user")
+	}
+	var storedPassword string
+	err = rows.Scan(&storedPassword)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("the passed password is %v \nand the stored password is %v\n", password, storedPassword)
+	return storedPassword == password
+
+}
+
+func GetUsersUserid(db *sql.DB, username string) string {
+	var user_id string
+	rows, err := db.Query("SELECT userId FROM users WHERE username=?", username)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&user_id); err != nil {
+			fmt.Println(err)
+		}
+	}
+	return user_id
+}

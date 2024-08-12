@@ -20,6 +20,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		login.LoginPageHandler(w, r)
 	} else if urlPath == "/signupprocess" {
 		signup.SignupProcessHandler(w, r)
+	} else if urlPath == "/loginprocess" {
+		login.LoginProcessHandler(w, r)
 	} else if urlPath == "/createtaskprocess" {
 		task.CreateTaskProcessor(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/deletetask/") {
