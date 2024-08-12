@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"todoproject/pkg/home"
+	"todoproject/pkg/login"
 	"todoproject/pkg/signup"
 	"todoproject/pkg/task"
 )
@@ -15,6 +16,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		home.HomePageHandler(w, r)
 	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
+	} else if urlPath == "/login" {
+		login.LoginPageHandler(w, r)
 	} else if urlPath == "/signupprocess" {
 		signup.SignupProcessHandler(w, r)
 	} else if urlPath == "/createtaskprocess" {
