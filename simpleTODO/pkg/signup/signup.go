@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/tools"
+	"todoproject/pkg/user"
 )
 
 type datatosend struct {
@@ -37,13 +38,12 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 			userId := tools.GenerateUUID()
 			sessionId := tools.GenerateUUID()
 			http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-			databasetools.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
+			user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
 			databasetools.CreateSession(databasetools.DB, sessionId, userId)
 		} else {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
-
 
 }
