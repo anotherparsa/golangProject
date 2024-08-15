@@ -26,8 +26,33 @@ func Create_database() {
 	DB, _ = connect()
 }
 
-//CRUD
-//Create
+func ReadQuerryMaker(coulumns []string, table string, conditions map[string]string) string {
+	var stringtoadd string
+	Querry := "SELECT "
+	//creating columns part
+	for i := 0; i < len(coulumns); i++ {
+		if i <= len(coulumns)-2 {
+			stringtoadd = fmt.Sprintf("%v, ", coulumns[i])
+		} else {
+			stringtoadd = fmt.Sprintf("%v ", coulumns[i])
+		}
+		Querry += stringtoadd
+	}
+	Querry += fmt.Sprintf("FROM %v", table)
+	fmt.Println(Querry)
+	//condition part
+	if len(conditions) != 0 {
+		stringtoadd = ""
+		Querry += " WHERE "
+		for columnName, value := range conditions {
+			stringtoadd = fmt.Sprintf("%v=%v", columnName, value)
+		}
+	}
+	Querry += stringtoadd
+	fmt.Println(Querry)
+	return Querry
+
+}
 
 func CreateSession(db *sql.DB, session_id string, user_id string) {
 	_, err := db.Exec("INSERT INTO sessions (sessionId, userId) VALUES (?, ?)", session_id, user_id)

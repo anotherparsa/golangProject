@@ -69,7 +69,10 @@ func EditTask(w http.ResponseWriter, r *http.Request) {
 func EditTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../../pkg/task/template/edittask.html")
 	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
-	task := GetUserTaskByTaskID(databasetools.DB, taskID)
+	fmt.Printf("Passed task ID %v \n", taskID)
+	Query := databasetools.ReadQuerryMaker([]string{"id", "author", "priority", "title", "description", "isDone"}, "users", map[string]string{"id": taskID})
+	task := ReadTask(databasetools.DB, Query)
+	fmt.Println(task)
 	t.Execute(w, task)
 }
 
@@ -81,22 +84,23 @@ func CreateTask(db *sql.DB, author string, priority string, title string, descri
 	fmt.Println("Task Created")
 }
 
-func ReadTask(db *sql.DB, factor string, value string) models.Task {
+func ReadTask(db *sql.DB, query string) models.Task {
 	task := models.Task{}
 
-	rows, err := db.Query("SELECT id, author, priority, title, description, isDone WHERE ?=?", factor, value)
+	rows, err := db.Query(query)
 	if err != nil {
+		fmt.Println("Read task in task.go")
 		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Title, &task.Description, &task.IsDone)
 		if err != nil {
+			fmt.Println("In the loop")
 			fmt.Println(err)
 		}
 	}
 	return task
-
 }
 
 func GetUsersTask(db *sql.DB, username string) ([]Task, error) {
