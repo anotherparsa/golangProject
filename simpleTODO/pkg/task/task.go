@@ -29,7 +29,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		priority := r.Form.Get("priority")
 		title := r.Form.Get("title")
 		description := r.Form.Get("description")
-		databasetools.CreateTasks(databasetools.DB, author, priority, title, description)
+		CreateTask(databasetools.DB, author, priority, title, description)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
@@ -95,6 +95,7 @@ func ReadTask(db *sql.DB, factor string, value string) models.Task {
 			fmt.Println(err)
 		}
 	}
+	return task
 
 }
 
