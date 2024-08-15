@@ -58,11 +58,8 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 func EditTask(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	id := r.Form.Get("id")
-	newTitle := r.Form.Get("title")
-	newDescription := r.Form.Get("description")
-	newPriority := r.Form.Get("priority")
-	databasetools.EditTask(databasetools.DB, id, newTitle, newDescription, newPriority)
+	Query := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", map[string]string{"id": r.Form.Get("id")}, map[string]string{"priority": r.Form.Get("priority"), "title": r.Form.Get("title"), "description": r.Form.Get("description")})
+	databasetools.EditTask(databasetools.DB, Query)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
@@ -70,7 +67,7 @@ func EditTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../../pkg/task/template/edittask.html")
 	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
 	fmt.Printf("Passed task ID %v \n", taskID)
-	Query := databasetools.ReadQuerryMaker([]string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{"id": taskID})
+	Query := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{"id": taskID}, map[string]string{})
 	task := ReadTask(databasetools.DB, Query)
 	fmt.Println(task)
 	t.Execute(w, task)

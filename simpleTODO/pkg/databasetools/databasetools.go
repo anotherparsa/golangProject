@@ -26,32 +26,59 @@ func Create_database() {
 	DB, _ = connect()
 }
 
-func ReadQuerryMaker(coulumns []string, table string, conditions map[string]string) string {
-	var stringtoadd string
-	Querry := "SELECT "
-	//creating columns part
-	for i := 0; i < len(coulumns); i++ {
-		if i <= len(coulumns)-2 {
-			stringtoadd = fmt.Sprintf("%v, ", coulumns[i])
-		} else {
-			stringtoadd = fmt.Sprintf("%v ", coulumns[i])
+func QuerryMaker(operation string, coulumns []string, table string, conditions map[string]string, values map[string]string) string {
+	//read part
+	if operation == "select" {
+		var stringtoadd string
+		Querry := "SELECT "
+		//creating columns part
+		for i := 0; i < len(coulumns); i++ {
+			if i <= len(coulumns)-2 {
+				stringtoadd = fmt.Sprintf("%v, ", coulumns[i])
+			} else {
+				stringtoadd = fmt.Sprintf("%v ", coulumns[i])
+			}
+			Querry += stringtoadd
+		}
+		Querry += fmt.Sprintf("FROM %v", table)
+		//condition part
+		if len(conditions) != 0 {
+			stringtoadd = ""
+			Querry += " WHERE "
+			for columnName, value := range conditions {
+				stringtoadd = fmt.Sprintf("%v=%v", columnName, value)
+			}
 		}
 		Querry += stringtoadd
-	}
-	Querry += fmt.Sprintf("FROM %v", table)
-	fmt.Println(Querry)
-	//condition part
-	if len(conditions) != 0 {
-		stringtoadd = ""
-		Querry += " WHERE "
-		for columnName, value := range conditions {
-			stringtoadd = fmt.Sprintf("%v=%v", columnName, value)
+		return Querry
+		//update part
+	} else if operation == "update" {
+		var stringtoadd string
+		Query := "UPDATE " + table + " SET "
+		if len(values) != 0 {
+			stringtoadd = ""
+			counter := 0
+			for column, value := range values {
+				if counter <= len(values)-2 {
+					stringtoadd = fmt.Sprintf("%v='%v', ", column, value)
+					counter++
+				} else {
+					stringtoadd = fmt.Sprintf("%v='%v' ", column, value)
+				}
+				Query += stringtoadd
+			}
 		}
+		if len(conditions) != 0 {
+			stringtoadd = ""
+			Query += "WHERE "
+			for columnName, value := range conditions {
+				stringtoadd = fmt.Sprintf("%v=%v", columnName, value)
+				Query += stringtoadd
+			}
+		}
+		return Query
 	}
-	Querry += stringtoadd
-	fmt.Println(Querry)
-	return Querry
-
+	return "invalid operation"
 }
 
 func CreateSession(db *sql.DB, session_id string, user_id string) {
@@ -118,8 +145,8 @@ func DeleteTask(db *sql.DB, id string) {
 }
 
 //update task
-func EditTask(db *sql.DB, id string, newTitle string, newDescription string, newPriority string) {
-	_, err := db.Exec("UPDATE tasks set priority=?, title=?, description=? WHERE id=?", newPriority, newTitle, newDescription, id)
+func EditTask(db *sql.DB, query string) {
+	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("we've go an error")
