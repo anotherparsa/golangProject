@@ -89,3 +89,11 @@ func EditTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	task := GetUserTaskByTaskID(databasetools.DB, taskID)
 	t.Execute(w, task)
 }
+
+func CreateTask(db *sql.DB, author string, priority string, title string, description string) {
+	_, err := db.Exec("INSERT INTO tasks (author, priority, title, description, isDone) VALUES (?, ?, ?, ?, ?)", author, priority, title, description, "0")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Task Created")
+}
