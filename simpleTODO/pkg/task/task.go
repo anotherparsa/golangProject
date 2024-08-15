@@ -70,7 +70,7 @@ func EditTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../../pkg/task/template/edittask.html")
 	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
 	fmt.Printf("Passed task ID %v \n", taskID)
-	Query := databasetools.ReadQuerryMaker([]string{"id", "author", "priority", "title", "description", "isDone"}, "users", map[string]string{"id": taskID})
+	Query := databasetools.ReadQuerryMaker([]string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{"id": taskID})
 	task := ReadTask(databasetools.DB, Query)
 	fmt.Println(task)
 	t.Execute(w, task)
