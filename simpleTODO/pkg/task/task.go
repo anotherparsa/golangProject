@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"todoproject/pkg/databasetools"
+	"todoproject/pkg/models"
 )
 
 type Task struct {
@@ -31,24 +32,6 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		databasetools.CreateTasks(databasetools.DB, author, priority, title, description)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
-}
-
-func GetUsersTask(db *sql.DB, username string) ([]Task, error) {
-	rows, err := db.Query("SELECT id, priority, title, description, isDone FROM tasks WHERE author = ?", username)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var tasks []Task
-	for rows.Next() {
-		var task Task
-		if err := rows.Scan(&task.Id, &task.Priority, &task.Title, &task.Description, &task.IsDone); err != nil {
-			return nil, err
-		}
-		tasks = append(tasks, task)
-	}
-	return tasks, nil
 }
 
 func GetUserTaskByTaskID(db *sql.DB, id string) Task {
@@ -96,4 +79,39 @@ func CreateTask(db *sql.DB, author string, priority string, title string, descri
 		fmt.Println(err)
 	}
 	fmt.Println("Task Created")
+}
+
+func ReadTask(db *sql.DB, factor string, value string) models.Task {
+	task := models.Task{}
+
+	rows, err := db.Query("SELECT id, author, priority, title, description, isDone WHERE ?=?", factor, value)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Title, &task.Description, &task.IsDone)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+}
+
+func GetUsersTask(db *sql.DB, username string) ([]Task, error) {
+	rows, err := db.Query("SELECT id, priority, title, description, isDone FROM tasks WHERE author = ?", username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []Task
+	for rows.Next() {
+		var task Task
+		if err := rows.Scan(&task.Id, &task.Priority, &task.Title, &task.Description, &task.IsDone); err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
 }

@@ -37,14 +37,6 @@ func CreateSession(db *sql.DB, session_id string, user_id string) {
 	fmt.Println("Session created successfully")
 }
 
-func CreateTasks(db *sql.DB, author string, priority string, title string, description string) {
-	_, err := db.Exec("INSERT INTO tasks (author, priority, title, description, isdone) VALUES (?, ?, ?, ?, ?)", author, priority, title, description, "0")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("Task created successfully")
-}
-
 //Read
 // Read records
 func WhoIsThis(db *sql.DB, session_id string) string {
