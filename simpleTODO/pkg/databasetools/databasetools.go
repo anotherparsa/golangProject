@@ -60,10 +60,10 @@ func QuerryMaker(operation string, coulumns []string, table string, conditions m
 			counter := 0
 			for column, value := range values {
 				if counter <= len(values)-2 {
-					stringtoadd = fmt.Sprintf("%v='%v', ", column, value)
+					stringtoadd = fmt.Sprintf("%v=%v, ", column, value)
 					counter++
 				} else {
-					stringtoadd = fmt.Sprintf("%v='%v' ", column, value)
+					stringtoadd = fmt.Sprintf("%v=%v ", column, value)
 				}
 				Query += stringtoadd
 			}
@@ -77,15 +77,35 @@ func QuerryMaker(operation string, coulumns []string, table string, conditions m
 			}
 		}
 		return Query
+	} else if operation == "insert" {
+		var stringtoadd string
+		Query := fmt.Sprintf("INSERT INTO %v ( ", table)
+		for i := 0; i < len(coulumns); i++ {
+			if i <= len(coulumns)-2 {
+				stringtoadd = fmt.Sprintf("%v, ", coulumns[i])
+			} else {
+				stringtoadd = fmt.Sprintf("%v ", coulumns[i])
+			}
+			Query += stringtoadd
+		}
+		Query += ") VALUES ( "
+		if len(values) != 0 {
+			stringtoadd = ""
+			counter := 0
+			for _, value := range values {
+				if counter <= len(values)-2 {
+					stringtoadd = fmt.Sprintf("'%v', ", value)
+					counter++
+				} else {
+					stringtoadd = fmt.Sprintf("'%v' ", value)
+				}
+				Query += stringtoadd
+			}
+		}
+		Query += ")"
+		return Query
 	}
 	return "invalid operation"
-}
-
-func CreateSession(db *sql.DB, session_id string, user_id string) {
-	_, err := db.Exec("INSERT INTO sessions (sessionId, userId) VALUES (?, ?)", session_id, user_id)
-	if err != nil {
-		fmt.Println(err)
-	}
 }
 
 //Read

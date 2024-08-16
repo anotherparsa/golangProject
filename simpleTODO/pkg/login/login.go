@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"todoproject/pkg/databasetools"
+	"todoproject/pkg/session"
 	"todoproject/pkg/tools"
 )
 
@@ -21,7 +22,8 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		sessionId := tools.GenerateUUID()
 		userId := databasetools.GetUsersUserid(databasetools.DB, username)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-		databasetools.CreateSession(databasetools.DB, sessionId, userId)
+		query := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+		session.CreateSession(databasetools.DB, query)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("User not found in login process handler ")

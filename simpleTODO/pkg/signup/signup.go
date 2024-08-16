@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 	"todoproject/pkg/databasetools"
+	"todoproject/pkg/session"
 	"todoproject/pkg/tools"
 	"todoproject/pkg/user"
 )
@@ -42,7 +43,8 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 				sessionId := tools.GenerateUUID()
 				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
 				user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
-				databasetools.CreateSession(databasetools.DB, sessionId, userId)
+				query := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+				session.CreateSession(databasetools.DB, query)
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			} else {
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
