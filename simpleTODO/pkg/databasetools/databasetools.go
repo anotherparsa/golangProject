@@ -26,6 +26,8 @@ func Create_database() {
 	DB, _ = connect()
 }
 
+//this way the code is vulnerable to sql injection
+//fix that
 func QuerryMaker(operation string, coulumns []string, table string, conditions map[string]string, values map[string]string) string {
 	//read part
 	if operation == "select" {
