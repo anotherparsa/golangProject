@@ -17,7 +17,6 @@ func CreateUser(db *sql.DB, userId string, username string, password string, fir
 
 func ReadUser(db *sql.DB, factor string, value string) models.User {
 	user := models.User{}
-
 	rows, err := db.Query("SELECT userId, username, password, firstName, lastName, email, phoneNumber WHERE ?=?", factor, value)
 	if err != nil {
 		fmt.Println(err)

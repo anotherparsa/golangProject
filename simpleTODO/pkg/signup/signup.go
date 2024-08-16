@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/tools"
 	"todoproject/pkg/user"
@@ -28,25 +29,28 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.Form.Get("email")
 	sent_csrf_token, err := r.Cookie("csrft")
 	if err != nil || sent_csrf_token == nil {
-		fmt.Println(err)
-	}
-	if sent_csrf_token.Value != csrft {
-		fmt.Fprintf(w, "Invalid CSRF token")
+		fmt.Println("csrft not found")
+		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
-		_, err := r.Cookie("session")
-		if err != nil {
-			userId := tools.GenerateUUID()
-			sessionId := tools.GenerateUUID()
-			http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-			user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
-			databasetools.CreateSession(databasetools.DB, sessionId, userId)
-			http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+		if sent_csrf_token.Value != csrft {
+			fmt.Println("invalid csrft")
+			http.Redirect(w, r, "/signup", http.StatusSeeOther)
 		} else {
+			_, err := r.Cookie("session")
+			if err != nil {
+				userId := tools.GenerateUUID()
+				sessionId := tools.GenerateUUID()
+				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
+				user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
+				databasetools.CreateSession(databasetools.DB, sessionId, userId)
+				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+			} else {
+				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+				http.Redirect(w, r, "/home", http.StatusSeeOther)
+			}
 			http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
-		http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 
 }
