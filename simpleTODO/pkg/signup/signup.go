@@ -9,16 +9,13 @@ import (
 	"todoproject/pkg/user"
 )
 
-type datatosend struct {
-	Csrf_token string
-}
-
-var csrf_token = tools.GenerateUUID()
+var csrft string
 
 func SignupPageHander(w http.ResponseWriter, r *http.Request) {
-	d := datatosend{Csrf_token: csrf_token}
-	t, _ := template.ParseFiles("../../pkg/signup/template/signup.html")
-	t.Execute(w, d)
+	csrft = tools.GenerateUUID()
+	http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
+	template, _ := template.ParseFiles("../../pkg/signup/template/signup.html")
+	template.Execute(w, nil)
 }
 
 func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,8 +26,11 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	lastname := r.Form.Get("lastName")
 	phonenumber := r.Form.Get("phoneNumber")
 	email := r.Form.Get("email")
-	sent_csrf_token := r.Form.Get("csrf-token")
-	if sent_csrf_token != csrf_token {
+	sent_csrf_token, err := r.Cookie("csrft")
+	if err != nil || sent_csrf_token == nil {
+		fmt.Println(err)
+	}
+	if sent_csrf_token.Value != csrft {
 		fmt.Fprintf(w, "Invalid CSRF token")
 	} else {
 		_, err := r.Cookie("session")
@@ -40,9 +40,12 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
 			user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
 			databasetools.CreateSession(databasetools.DB, sessionId, userId)
+			http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 		} else {
+			http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
+		http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 

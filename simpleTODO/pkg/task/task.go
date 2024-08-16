@@ -86,14 +86,12 @@ func ReadTask(db *sql.DB, query string) models.Task {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		fmt.Println("Read task in task.go")
 		fmt.Println(err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Title, &task.Description, &task.IsDone)
 		if err != nil {
-			fmt.Println("In the loop")
 			fmt.Println(err)
 		}
 	}
