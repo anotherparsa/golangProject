@@ -12,8 +12,6 @@ func CreateUser(db *sql.DB, userId string, username string, password string, fir
 	_, err := db.Exec("INSERT INTO users (userId, username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)", userId, username, password, firstName, lastName, email, phoneNumber)
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Println("User Created")
 	}
 }
 

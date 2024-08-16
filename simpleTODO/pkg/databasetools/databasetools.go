@@ -86,13 +86,11 @@ func CreateSession(db *sql.DB, session_id string, user_id string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Session created successfully")
 }
 
 //Read
 // Read records
 func WhoIsThis(db *sql.DB, session_id string) string {
-	fmt.Printf("Passed session id : %v\n", session_id)
 	var user_id string
 	var username string
 	rows, err := db.Query("SELECT userId FROM sessions WHERE sessionId=?", session_id)
@@ -105,7 +103,6 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-	fmt.Printf("Found user id : %v\n", user_id)
 	rows, err = db.Query("SELECT username FROM users WHERE userId=?", user_id)
 	if err != nil {
 		fmt.Println(err)
@@ -116,7 +113,6 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-	fmt.Printf("Found user name : %v\n", username)
 	return username
 }
 
@@ -141,7 +137,6 @@ func DeleteTask(db *sql.DB, id string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Task Deleted successfully")
 }
 
 //update task
@@ -151,7 +146,6 @@ func EditTask(db *sql.DB, query string) {
 		fmt.Println(err)
 		fmt.Println("we've go an error")
 	}
-	fmt.Println("Task Updated successfully")
 }
 
 func ValidateUser(db *sql.DB, username string, password string) bool {
@@ -169,7 +163,6 @@ func ValidateUser(db *sql.DB, username string, password string) bool {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("the passed password is %v \nand the stored password is %v\n", password, storedPassword)
 	return storedPassword == password
 
 }
