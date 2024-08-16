@@ -48,7 +48,7 @@ func QuerryMaker(operation string, coulumns []string, table string, conditions m
 			stringtoadd = ""
 			Querry += " WHERE "
 			for columnName, value := range conditions {
-				stringtoadd = fmt.Sprintf("%v=%v", columnName, value)
+				stringtoadd = fmt.Sprintf("%v='%v'", columnName, value)
 			}
 		}
 		Querry += stringtoadd
@@ -62,10 +62,10 @@ func QuerryMaker(operation string, coulumns []string, table string, conditions m
 			counter := 0
 			for column, value := range values {
 				if counter <= len(values)-2 {
-					stringtoadd = fmt.Sprintf("%v=%v, ", column, value)
+					stringtoadd = fmt.Sprintf("%v='%v', ", column, value)
 					counter++
 				} else {
-					stringtoadd = fmt.Sprintf("%v=%v ", column, value)
+					stringtoadd = fmt.Sprintf("%v='%v' ", column, value)
 				}
 				Query += stringtoadd
 			}
@@ -115,7 +115,8 @@ func QuerryMaker(operation string, coulumns []string, table string, conditions m
 func WhoIsThis(db *sql.DB, session_id string) string {
 	var user_id string
 	var username string
-	rows, err := db.Query("SELECT userId FROM sessions WHERE sessionId=?", session_id)
+	query := QuerryMaker("select", []string{"userId"}, "sessions", map[string]string{"sessionId": session_id}, map[string]string{})
+	rows, err := db.Query(query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -125,7 +126,8 @@ func WhoIsThis(db *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-	rows, err = db.Query("SELECT username FROM users WHERE userId=?", user_id)
+	query = QuerryMaker("select", []string{"username"}, "users", map[string]string{"userId": user_id}, map[string]string{})
+	rows, err = db.Query(query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -168,25 +170,6 @@ func EditTask(db *sql.DB, query string) {
 		fmt.Println(err)
 		fmt.Println("we've go an error")
 	}
-}
-
-func ValidateUser(db *sql.DB, username string, password string) bool {
-	rows, err := db.Query("SELECT password FROM users where username=?", username)
-	fmt.Printf("The user name passed in validate user is %v \n and the password is %v \n", username, password)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	if !rows.Next() {
-		fmt.Println("User Not found in validate user")
-	}
-	var storedPassword string
-	err = rows.Scan(&storedPassword)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return storedPassword == password
-
 }
 
 func GetUsersUserid(db *sql.DB, username string) string {
