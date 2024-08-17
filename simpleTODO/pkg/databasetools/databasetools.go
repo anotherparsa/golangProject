@@ -3,6 +3,7 @@ package databasetools
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 )
 
 const (
@@ -23,24 +24,40 @@ func ConnectToDatabase() (*sql.DB, error) {
 
 func CreateDatabase() {
 	DataBase, _ = ConnectToDatabase()
+	fmt.Println(DataBase)
 }
 
-//this way the code is vulnerable to sql injection
-//fix that
-func QuerryMaker(operation string, columns []string, table string, conditions map[string]string, values map[string]string) (string, []interface{}) {
-	var args []interface{} // to hold the actual values
+func isValidIdentifier(identifier string) bool {
+	// This regex allows alphanumeric characters and underscores
+	// You may want to adjust this based on your database's naming conventions
+	validIdentifier := regexp.MustCompile("^[a-zA-Z_][a-zA-Z0-9_]*$")
+	return validIdentifier.MatchString(identifier)
+}
+
+func QuerryMaker(operation string, columns []string, table string, conditions map[string]string, values [][]string) (string, []interface{}) {
+	var args []interface{}
 	var query string
+
+	if !isValidIdentifier(table) {
+		return "invalid table name", nil
+	}
+
+	for _, col := range columns {
+		if !isValidIdentifier(col) {
+			return "invalid column name", nil
+		}
+	}
 
 	if operation == "select" {
 		query = "SELECT "
-		for i := 0; i < len(columns); i++ {
+		for i, col := range columns {
 			if i < len(columns)-1 {
-				query += fmt.Sprintf("%v, ", columns[i])
+				query += fmt.Sprintf("%s, ", col)
 			} else {
-				query += fmt.Sprintf("%v ", columns[i])
+				query += fmt.Sprintf("%s ", col)
 			}
 		}
-		query += fmt.Sprintf("FROM %v", table)
+		query += fmt.Sprintf("FROM %s", table)
 
 		if len(conditions) != 0 {
 			query += " WHERE "
@@ -49,8 +66,8 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 				if !first {
 					query += " AND "
 				}
-				query += fmt.Sprintf("%v = ?", columnName)
-				args = append(args, value) // collect the condition value
+				query += fmt.Sprintf("%s = ?", columnName)
+				args = append(args, value)
 				first = false
 			}
 		}
@@ -59,12 +76,22 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 	} else if operation == "update" {
 		query = "UPDATE " + table + " SET "
 		first := true
-		for column, value := range values {
+		for _, valuePair := range values {
+			if len(valuePair) != 2 {
+				return "invalid value pair", nil
+			}
+			column := valuePair[0]
+			value := valuePair[1]
+
+			if !isValidIdentifier(column) {
+				return "invalid column name", nil
+			}
+
 			if !first {
 				query += ", "
 			}
-			query += fmt.Sprintf("%v = ?", column)
-			args = append(args, value) // collect the update value
+			query += fmt.Sprintf("%s = ?", column)
+			args = append(args, value)
 			first = false
 		}
 
@@ -75,36 +102,39 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 				if !first {
 					query += " AND "
 				}
-				query += fmt.Sprintf("%v = ?", columnName)
-				args = append(args, value) // collect the condition value
+				query += fmt.Sprintf("%s = ?", columnName)
+				args = append(args, value)
 				first = false
 			}
 		}
 		return query, args
 
 	} else if operation == "insert" {
-		query = fmt.Sprintf("INSERT INTO %v (", table)
-		for i := 0; i < len(columns); i++ {
+		query = fmt.Sprintf("INSERT INTO %s (", table)
+		for i, col := range columns {
 			if i < len(columns)-1 {
-				query += fmt.Sprintf("%v, ", columns[i])
+				query += fmt.Sprintf("%s, ", col)
 			} else {
-				query += fmt.Sprintf("%v ", columns[i])
+				query += fmt.Sprintf("%s ", col)
 			}
 		}
 		query += ") VALUES ("
-
+		fmt.Println(values)
 		for i := 0; i < len(values); i++ {
+			if len(values[i]) != 2 {
+				return "invalid value pair", nil
+			}
 			if i < len(values)-1 {
 				query += "?, "
 			} else {
 				query += "? "
 			}
-			// Collecting values to args slice
-			for _, value := range values {
-				args = append(args, value)
-			}
+			fmt.Println(values[i][1])
+			args = append(args, values[i][1]) // Add the value part to args
 		}
 		query += ")"
+
+		fmt.Println("query making was ok")
 		return query, args
 	}
 

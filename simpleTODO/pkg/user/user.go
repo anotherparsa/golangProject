@@ -11,15 +11,18 @@ import (
 //Create
 func CreateUser(database *sql.DB, query string, arguments []interface{}) {
 	fmt.Println("error in 1")
-	safequery, err := databasetools.DataBase.Prepare(query)
+	fmt.Println("we re going to make safe query")
+	safequery, err := database.Prepare(query)
+	fmt.Println("This is safe query")
+	fmt.Println(safequery)
 	if err != nil {
 		fmt.Println("error in 2")
-		fmt.Println(err)
+
 	}
 	_, err = safequery.Exec(arguments...)
-	if err == nil {
+	if err != nil {
 		fmt.Println("error in 3")
-		fmt.Println(err)
+
 	}
 	fmt.Println("error in 4")
 }

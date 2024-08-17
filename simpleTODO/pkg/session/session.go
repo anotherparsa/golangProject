@@ -24,7 +24,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 func WhoIsThis(database *sql.DB, session_id string) string {
 	var user_id string
 	var username string
-	query, arguments := databasetool.QuerryMaker("select", []string{"userId"}, "sessions", map[string]string{"sessionId": session_id}, map[string]string{})
+	query, arguments := databasetool.QuerryMaker("select", []string{"userId"}, "sessions", map[string]string{"sessionId": session_id}, [][]string{})
 	safequery, err := database.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +39,7 @@ func WhoIsThis(database *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-	query, arguments = databasetool.QuerryMaker("select", []string{"username"}, "users", map[string]string{"userId": user_id}, map[string]string{})
+	query, arguments = databasetool.QuerryMaker("select", []string{"username"}, "users", map[string]string{"userId": user_id}, [][]string{})
 	safequery, err = database.Prepare(query)
 	if err != nil {
 		fmt.Println(err)

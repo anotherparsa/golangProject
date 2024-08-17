@@ -22,11 +22,11 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	password := tools.HashThis(r.Form.Get("password"))
 	if ValidateUser(databasetools.DataBase, username, password) {
 		sessionId := tools.GenerateUUID()
-		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", map[string]string{"username": username, "password": password}, map[string]string{})
+		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", map[string]string{"username": username, "password": password}, [][]string{})
 		userId := user.ReadUser(databasetools.DataBase, query, arguments)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
 
-		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId[0].UserId})
+		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId[0].UserId}})
 		safequery, err := databasetools.DataBase.Prepare(query)
 		if err != nil {
 			fmt.Println(err)

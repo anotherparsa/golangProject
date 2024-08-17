@@ -32,14 +32,15 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			_, err := r.Cookie("session_id")
 			if err != nil {
-				fmt.Println("we reached here 1")
+				r.ParseForm()
+
 				userId := tools.GenerateUUID()
 				fmt.Println("we reached here 2")
 				sessionId := tools.GenerateUUID()
 				fmt.Println("we reached here 3")
 				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
 				fmt.Println("we reached here 4")
-				query, arguments := databasetools.QuerryMaker("insert", []string{"userID", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", map[string]string{}, map[string]string{"userId": userId, "username": r.Form.Get("username"), "password": tools.HashThis(r.Form.Get("password")), "firstName": r.Form.Get("firstName"), "lastName": r.Form.Get("lastName"), "email": r.Form.Get("email"), "phoneNumber": r.Form.Get("phoneNumber")})
+				query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", map[string]string{}, [][]string{{"userId", userId}, {"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("password"))}, {"firstName", r.Form.Get("firstName")}, {"lastName", r.Form.Get("lastName")}, {"email", r.Form.Get("email")}, {"phoneNumber", r.Form.Get("phoneNumber")}})
 				fmt.Println("we reached here 5")
 				fmt.Println("*******************************************")
 				fmt.Println(query)

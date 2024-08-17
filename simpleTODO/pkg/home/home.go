@@ -15,7 +15,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		username := session.WhoIsThis(databasetools.DataBase, cookie.Value)
 		template, _ := template.ParseFiles("../../pkg/home/template/home.html")
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "description", "isDone"}, "tasks", map[string]string{"username": username}, map[string]string{})
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "description", "isDone"}, "tasks", map[string]string{"username": username}, [][]string{})
 		tasks := task.ReadTask(databasetools.DataBase, query, arguments)
 		template.Execute(w, tasks)
 	}

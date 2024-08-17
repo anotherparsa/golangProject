@@ -17,7 +17,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
 		r.ParseForm()
-		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{}, map[string]string{"author": r.Form.Get("author"), "priority": r.Form.Get("priority"), "title": r.Form.Get("title"), "description": r.Form.Get("description"), "isDone": "0"})
+		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{}, [][]string{{"author", r.Form.Get("author")}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
 		safequery, err := databasetools.DataBase.Prepare(query)
 		if err != nil {
 			fmt.Println(err)
@@ -58,7 +58,7 @@ func ReadTask(db *sql.DB, query string, arguments []interface{}) []models.Task {
 //Update
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", map[string]string{"id": r.Form.Get("id")}, map[string]string{"priority": r.Form.Get("priority"), "title": r.Form.Get("title"), "description": r.Form.Get("description")})
+	query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", map[string]string{"id": r.Form.Get("id")}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
@@ -73,7 +73,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 //Delete
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	taskID := strings.TrimPrefix(r.URL.Path, "/deletetask/")
-	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", map[string]string{"id": taskID}, map[string]string{})
+	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", map[string]string{"id": taskID}, [][]string{})
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
