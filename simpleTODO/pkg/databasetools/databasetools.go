@@ -3,9 +3,35 @@ package databasetools
 import (
 	"database/sql"
 	"fmt"
+	"todoproject/pkg/models"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+//practicing
+func SelectAllUsers() []models.User {
+	db, _ := connect()
+
+	rows, err := db.Query("SELECT * FROM users")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+	users := []models.User{}
+
+	for rows.Next() {
+		user := models.User{}
+
+		err := rows.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		users = append(users, user)
+	}
+	fmt.Println(users)
+	return users
+}
 
 const (
 	username = "testuser"
