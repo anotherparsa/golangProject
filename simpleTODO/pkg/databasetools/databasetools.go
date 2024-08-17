@@ -56,7 +56,14 @@ func CreateUser(user models.User) {
 	}
 }
 
-
+func UpdateUser() {
+	db, _ := connect()
+	defer db.Close()
+	_, err := db.Exec("UPDATE users SET username='updated' WHERE id=?", 31)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
 const (
 	username = "testuser"
