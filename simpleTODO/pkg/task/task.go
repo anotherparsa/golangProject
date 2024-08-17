@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 	"todoproject/pkg/databasetools"
@@ -64,10 +65,27 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 }
 
 //Update
-//todo
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
+//page handler
+func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
+	if err != nil {
+		fmt.Println(err)
+	}
+	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+	task := ReadTask(Query, arguments)
+	template.Execute(w, task[0])
+}
+
+//processor
+func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
+	Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
+	UpdateTask(Query, arguments)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func UpdateTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
@@ -76,7 +94,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	fmt.Println("task has been updated")
 }
 
 //Delete
