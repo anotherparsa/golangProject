@@ -40,7 +40,7 @@ func ReadTask(db *sql.DB, query string, arguments []interface{}) []models.Task {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer db.Close()
+	defer rows.Close()
 	tasks := []models.Task{}
 	for rows.Next() {
 		task := models.Task{}

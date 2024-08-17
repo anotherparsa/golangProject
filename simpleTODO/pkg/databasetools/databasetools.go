@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -14,19 +16,16 @@ const (
 	database = "users"
 )
 
+func connect() (*sql.DB, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
+	return sql.Open("mysql", dsn)
+}
+
 var DataBase *sql.DB
 
-func ConnectToDatabase() (*sql.DB, error) {
-	DataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
-	//testuser:testpass@tcp(localhost:3306)/users
-	return sql.Open("mysql", DataSourceName)
-}
-
 func CreateDatabase() {
-	DataBase, _ = ConnectToDatabase()
-	fmt.Println(DataBase)
+	DataBase, _ = connect()
 }
-
 func isValidIdentifier(identifier string) bool {
 	// This regex allows alphanumeric characters and underscores
 	// You may want to adjust this based on your database's naming conventions
@@ -119,7 +118,6 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 			}
 		}
 		query += ") VALUES ("
-		fmt.Println(values)
 		for i := 0; i < len(values); i++ {
 			if len(values[i]) != 2 {
 				return "invalid value pair", nil
@@ -129,12 +127,10 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 			} else {
 				query += "? "
 			}
-			fmt.Println(values[i][1])
 			args = append(args, values[i][1]) // Add the value part to args
 		}
 		query += ")"
 
-		fmt.Println("query making was ok")
 		return query, args
 	}
 

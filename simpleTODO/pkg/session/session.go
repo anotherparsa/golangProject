@@ -8,12 +8,18 @@ import (
 	databasetool "todoproject/pkg/databasetools"
 )
 
-func CreateSession(db *sql.DB, query string) {
-	//_, err := db.Exec("INSERT INTO sessions (sessionId, userId) VALUES (?, ?)", session_id, user_id)
-	_, err := db.Exec(query)
+func CreateSession(database *sql.DB, query string, arguments []interface{}) {
+	safequery, err := database.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
+
 	}
+	_, err = safequery.Exec(arguments...)
+	if err != nil {
+		fmt.Println(err)
+
+	}
+	fmt.Println("session has been created")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +31,7 @@ func WhoIsThis(database *sql.DB, session_id string) string {
 	var user_id string
 	var username string
 	query, arguments := databasetool.QuerryMaker("select", []string{"userId"}, "sessions", map[string]string{"sessionId": session_id}, [][]string{})
+
 	safequery, err := database.Prepare(query)
 	if err != nil {
 		log.Fatal(err)

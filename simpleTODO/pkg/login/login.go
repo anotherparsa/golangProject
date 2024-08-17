@@ -25,17 +25,8 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", map[string]string{"username": username, "password": password}, [][]string{})
 		userId := user.ReadUser(databasetools.DataBase, query, arguments)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-
 		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId[0].UserId}})
-		safequery, err := databasetools.DataBase.Prepare(query)
-		if err != nil {
-			fmt.Println(err)
-		}
-		_, err = safequery.Exec(arguments...)
-		if err != nil {
-			fmt.Println(err)
-		}
-		session.CreateSession(databasetools.DataBase, query)
+		session.CreateSession(databasetools.DataBase, query, arguments)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("User not found in login process handler ")

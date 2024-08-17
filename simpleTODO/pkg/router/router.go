@@ -26,7 +26,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	} else if urlPath == "/loginprocess" {
 		login.LoginProcessHandler(w, r)
 	} else if urlPath == "/createtaskprocess" {
-		//	task.CreateTaskProcessor(w, r)
+		task.CreateTask(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/deletetask/") {
 		task.DeleteTask(w, r)
 	} else if urlPath == "/edittaskprocessor" {

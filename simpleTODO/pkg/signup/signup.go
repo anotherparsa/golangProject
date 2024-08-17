@@ -35,22 +35,17 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 				r.ParseForm()
 
 				userId := tools.GenerateUUID()
-				fmt.Println("we reached here 2")
 				sessionId := tools.GenerateUUID()
-				fmt.Println("we reached here 3")
 				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
-				fmt.Println("we reached here 4")
+
+				//Create user query
 				query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", map[string]string{}, [][]string{{"userId", userId}, {"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("password"))}, {"firstName", r.Form.Get("firstName")}, {"lastName", r.Form.Get("lastName")}, {"email", r.Form.Get("email")}, {"phoneNumber", r.Form.Get("phoneNumber")}})
-				fmt.Println("we reached here 5")
-				fmt.Println("*******************************************")
-				fmt.Println(query)
-				fmt.Println("*******************************************")
-				fmt.Println(arguments...)
-				fmt.Println("*******************************************")
 				user.CreateUser(databasetools.DataBase, query, arguments)
-				fmt.Println("we reached here 6")
-				session.CreateSession(databasetools.DataBase, query)
-				fmt.Println("we reached here 7")
+
+				//Create Session query
+				query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
+				session.CreateSession(databasetools.DataBase, query, arguments)
+
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			} else {
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
