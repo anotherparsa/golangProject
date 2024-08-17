@@ -46,6 +46,18 @@ func SelectUserBasedId() models.User {
 
 }
 
+func CreateUser(user models.User) {
+	db, _ := connect()
+	defer db.Close()
+	_, err := db.Exec("INSERT INTO users(userId, username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)", user.UserId, user.Username, user.Password, user.FirstName, user.LastName, user.Email, user.PhoneNumber)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+
+
 const (
 	username = "testuser"
 	password = "testpass"
