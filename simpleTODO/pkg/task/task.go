@@ -1,37 +1,45 @@
 package task
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
+	"todoproject/pkg/session"
 )
 
 //CRUD
 //Create
-func CreateTask(w http.ResponseWriter, r *http.Request) {
+func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
 		r.ParseForm()
-		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{}, [][]string{{"author", r.Form.Get("author")}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
-		safequery, err := databasetools.DataBase.Prepare(query)
-		if err != nil {
-			fmt.Println(err)
-		}
-		_, err = safequery.Exec(arguments...)
-		if err == nil {
-			fmt.Println(err)
-		}
+		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", map[string]string{}, [][]string{{"author", session.WhoIsThis(databasetools.DataBase, cookie.Value)}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
+		fmt.Println("We reached here 5")
+		CreateTask(query, arguments)
+		fmt.Println("We reached here 6")
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
+
+}
+func CreateTask(query string, arguments []interface{}) {
+	safequery, err := databasetools.DataBase.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = safequery.Exec(arguments...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Task has been created")
+
 }
 
 //Read
-func ReadTask(db *sql.DB, query string, arguments []interface{}) []models.Task {
+func ReadTask(query string, arguments []interface{}) []models.Task {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
