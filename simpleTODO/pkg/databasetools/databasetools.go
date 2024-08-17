@@ -65,6 +65,15 @@ func UpdateUser() {
 	}
 }
 
+func DeleteUser() {
+	db, _ := connect()
+	defer db.Close()
+	_, err := db.Exec("DELETE FROM users WHERE id=?", 31)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 const (
 	username = "testuser"
 	password = "testpass"
