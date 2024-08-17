@@ -3,30 +3,48 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
 )
 
 //CRUD
 //Create
-func CreateUser(db *sql.DB, userId string, username string, password string, firstName string, lastName string, email string, phoneNumber string) {
-	_, err := db.Exec("INSERT INTO users (userId, username, password, firstName, lastName, email, phoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)", userId, username, password, firstName, lastName, email, phoneNumber)
+func CreateUser(database *sql.DB, query string, arguments []interface{}) {
+	fmt.Println("error in 1")
+	safequery, err := databasetools.DataBase.Prepare(query)
+	if err != nil {
+		fmt.Println("error in 2")
+		fmt.Println(err)
+	}
+	_, err = safequery.Exec(arguments...)
+	if err == nil {
+		fmt.Println("error in 3")
+		fmt.Println(err)
+	}
+	fmt.Println("error in 4")
+}
+
+//Read
+func ReadUser(database *sql.DB, query string, arguments []interface{}) []models.User {
+	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
 	}
-}
-
-func ReadUser(db *sql.DB, factor string, value string) models.User {
-	user := models.User{}
-	rows, err := db.Query("SELECT userId, username, password, firstName, lastName, email, phoneNumber WHERE ?=?", factor, value)
+	rows, err := safequery.Query(arguments...)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer rows.Close()
+	user := models.User{}
+	users := []models.User{}
+
 	for rows.Next() {
 		err = rows.Scan(&user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
 		if err != nil {
 			fmt.Println(err)
 		}
+		users = append(users, user)
 	}
-	return user
+
+	return users
 }

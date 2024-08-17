@@ -1,10 +1,10 @@
 package home
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"todoproject/pkg/databasetools"
+	"todoproject/pkg/session"
 	"todoproject/pkg/task"
 )
 
@@ -13,14 +13,10 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || cookie == nil {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
-		session_id := cookie.Value
-		username := databasetools.WhoIsThis(databasetools.DB, session_id)
+		username := session.WhoIsThis(databasetools.DataBase, cookie.Value)
 		template, _ := template.ParseFiles("../../pkg/home/template/home.html")
-		tasks, err := task.GetUsersTask(databasetools.DB, username)
-		if err != nil {
-			fmt.Println(err)
-		}
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "description", "isDone"}, "tasks", map[string]string{"username": username}, map[string]string{})
+		tasks := task.ReadTask(databasetools.DataBase, query, arguments)
 		template.Execute(w, tasks)
-
 	}
 }

@@ -21,13 +21,6 @@ func SignupPageHander(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	username := r.Form.Get("username")
-	password := tools.HashThis(r.Form.Get("password"))
-	firstname := r.Form.Get("firstName")
-	lastname := r.Form.Get("lastName")
-	phonenumber := r.Form.Get("phoneNumber")
-	email := r.Form.Get("email")
 	sent_csrf_token, err := r.Cookie("csrft")
 	if err != nil || sent_csrf_token == nil {
 		fmt.Println("csrft not found")
@@ -37,21 +30,26 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("invalid csrft")
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
 		} else {
-			_, err := r.Cookie("session")
+			_, err := r.Cookie("session_id")
 			if err != nil {
+				fmt.Println("we reached here 1")
 				userId := tools.GenerateUUID()
+				fmt.Println("we reached here 2")
 				sessionId := tools.GenerateUUID()
+				fmt.Println("we reached here 3")
 				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
-				user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
-
-				query, arguments := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
-				safequery, err := databasetools.DB.Prepare(query)
-				if err != nil {
-					fmt.Println(err)
-				}
-				_, err = safequery.Exec(arguments...)
-				
-				session.CreateSession(databasetools.DB, query)
+				fmt.Println("we reached here 4")
+				query, arguments := databasetools.QuerryMaker("insert", []string{"userID", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", map[string]string{}, map[string]string{"userId": userId, "username": r.Form.Get("username"), "password": tools.HashThis(r.Form.Get("password")), "firstName": r.Form.Get("firstName"), "lastName": r.Form.Get("lastName"), "email": r.Form.Get("email"), "phoneNumber": r.Form.Get("phoneNumber")})
+				fmt.Println("we reached here 5")
+				fmt.Println("*******************************************")
+				fmt.Println(query)
+				fmt.Println("*******************************************")
+				fmt.Println(arguments...)
+				fmt.Println("*******************************************")
+				user.CreateUser(databasetools.DataBase, query, arguments)
+				fmt.Println("we reached here 6")
+				session.CreateSession(databasetools.DataBase, query)
+				fmt.Println("we reached here 7")
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			} else {
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"todoproject/pkg/home"
 	"todoproject/pkg/login"
+	"todoproject/pkg/session"
 	"todoproject/pkg/signup"
 	"todoproject/pkg/task"
-	"todoproject/pkg/tools"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,7 +18,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
 	} else if urlPath == "/logout" {
-		tools.Logout(w, r)
+		session.Logout(w, r)
 	} else if urlPath == "/login" {
 		login.LoginPageHandler(w, r)
 	} else if urlPath == "/signupprocess" {
@@ -26,13 +26,13 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	} else if urlPath == "/loginprocess" {
 		login.LoginProcessHandler(w, r)
 	} else if urlPath == "/createtaskprocess" {
-		task.CreateTaskProcessor(w, r)
+		//	task.CreateTaskProcessor(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/deletetask/") {
 		task.DeleteTask(w, r)
 	} else if urlPath == "/edittaskprocessor" {
-		task.EditTask(w, r)
+		//	task.EditTask(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/edittask/") {
-		task.EditTaskPageHandler(w, r)
+		//	task.EditTaskPageHandler(w, r)
 	} else {
 		fmt.Fprintf(w, "Page not found")
 	}

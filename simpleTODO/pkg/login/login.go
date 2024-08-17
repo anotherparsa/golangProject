@@ -8,6 +8,7 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/session"
 	"todoproject/pkg/tools"
+	"todoproject/pkg/user"
 )
 
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,13 +20,14 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.Form.Get("username")
 	password := tools.HashThis(r.Form.Get("password"))
-	if ValidateUser(databasetools.DB, username, password) {
+	if ValidateUser(databasetools.DataBase, username, password) {
 		sessionId := tools.GenerateUUID()
-		userId := databasetools.GetUsersUserid(databasetools.DB, username)
+		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", map[string]string{"username": username, "password": password}, map[string]string{})
+		userId := user.ReadUser(databasetools.DataBase, query, arguments)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
 
-		query, arguments := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
-		safequery, err := databasetools.DB.Prepare(query)
+		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId[0].UserId})
+		safequery, err := databasetools.DataBase.Prepare(query)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -33,7 +35,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		session.CreateSession(databasetools.DB, query)
+		session.CreateSession(databasetools.DataBase, query)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("User not found in login process handler ")
