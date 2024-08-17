@@ -29,8 +29,21 @@ func SelectAllUsers() []models.User {
 
 		users = append(users, user)
 	}
-	fmt.Println(users)
 	return users
+}
+
+func SelectUserBasedId() models.User {
+	db, _ := connect()
+	row := db.QueryRow("SELECT * FROM users WHERE id = ?", 31)
+	defer db.Close()
+	user := models.User{}
+	err := row.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(user)
+	return user
+
 }
 
 const (
@@ -42,8 +55,9 @@ const (
 )
 
 func connect() (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
-	return sql.Open("mysql", dsn)
+	DataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
+	//testuser:testpass@tcp(localhost:3306)/users
+	return sql.Open("mysql", DataSourceName)
 }
 
 var DB *sql.DB

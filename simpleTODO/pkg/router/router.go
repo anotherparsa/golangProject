@@ -19,7 +19,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
 	} else if urlPath == "/practicing" {
-		databasetools.SelectAllUsers()
+		databasetools.SelectUserBasedId()
 	} else if urlPath == "/logout" {
 		tools.Logout(w, r)
 	} else if urlPath == "/login" {
