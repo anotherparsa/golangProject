@@ -43,7 +43,14 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 				sessionId := tools.GenerateUUID()
 				http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168)})
 				user.CreateUser(databasetools.DB, userId, username, password, firstname, lastname, email, phonenumber)
-				query := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+
+				query, arguments := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+				safequery, err := databasetools.DB.Prepare(query)
+				if err != nil {
+					fmt.Println(err)
+				}
+				_, err = safequery.Exec(arguments...)
+				
 				session.CreateSession(databasetools.DB, query)
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			} else {

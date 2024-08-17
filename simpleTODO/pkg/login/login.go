@@ -23,7 +23,16 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		sessionId := tools.GenerateUUID()
 		userId := databasetools.GetUsersUserid(databasetools.DB, username)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-		query := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+
+		query, arguments := databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", map[string]string{}, map[string]string{"sessionId": sessionId, "userId": userId})
+		safequery, err := databasetools.DB.Prepare(query)
+		if err != nil {
+			fmt.Println(err)
+		}
+		_, err = safequery.Exec(arguments...)
+		if err != nil {
+			fmt.Println(err)
+		}
 		session.CreateSession(databasetools.DB, query)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {

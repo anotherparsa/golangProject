@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"todoproject/pkg/databasetools"
 	"todoproject/pkg/home"
 	"todoproject/pkg/login"
 	"todoproject/pkg/signup"
@@ -18,8 +17,6 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		home.HomePageHandler(w, r)
 	} else if urlPath == "/signup" {
 		signup.SignupPageHander(w, r)
-	} else if urlPath == "/practicing" {
-		databasetools.SelectUserBasedId()
 	} else if urlPath == "/logout" {
 		tools.Logout(w, r)
 	} else if urlPath == "/login" {
