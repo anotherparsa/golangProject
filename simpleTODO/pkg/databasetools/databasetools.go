@@ -33,7 +33,7 @@ func isValidIdentifier(identifier string) bool {
 	return validIdentifier.MatchString(identifier)
 }
 
-func QuerryMaker(operation string, columns []string, table string, conditions map[string]string, values [][]string) (string, []interface{}) {
+func QuerryMaker(operation string, columns []string, table string, conditions [][]string, values [][]string) (string, []interface{}) {
 	var args []interface{}
 	var query string
 
@@ -61,7 +61,13 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 		if len(conditions) != 0 {
 			query += " WHERE "
 			first := true
-			for columnName, value := range conditions {
+			for _, condition := range conditions {
+				if len(condition) != 2 {
+					return "invalid condition pair", nil
+				}
+				columnName := condition[0]
+				value := condition[1]
+
 				if !first {
 					query += " AND "
 				}
@@ -97,7 +103,13 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 		if len(conditions) != 0 {
 			query += " WHERE "
 			first = true
-			for columnName, value := range conditions {
+			for _, condition := range conditions {
+				if len(condition) != 2 {
+					return "invalid condition pair", nil
+				}
+				columnName := condition[0]
+				value := condition[1]
+
 				if !first {
 					query += " AND "
 				}
@@ -130,6 +142,33 @@ func QuerryMaker(operation string, columns []string, table string, conditions ma
 			args = append(args, values[i][1]) // Add the value part to args
 		}
 		query += ")"
+
+		return query, args
+
+	} else if operation == "delete" {
+		query = fmt.Sprintf("DELETE FROM %s", table)
+
+		if len(conditions) != 0 {
+			query += " WHERE "
+			first := true
+			for _, condition := range conditions {
+				if len(condition) != 2 {
+					return "invalid condition pair", nil
+				}
+
+				columnName := condition[0]
+				value := condition[1]
+
+				if !first {
+					query += " AND "
+				}
+				query += fmt.Sprintf("%s = ?", columnName)
+				args = append(args, value)
+				first = false
+			}
+		} else {
+			return "no conditions provided for delete", nil
+		}
 
 		return query, args
 	}
