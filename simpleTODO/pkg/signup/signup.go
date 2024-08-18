@@ -44,7 +44,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 
 				//Create Session query
 				query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
-				session.CreateSession(databasetools.DataBase, query, arguments)
+				session.CreateSession(query, arguments)
 
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 			} else {

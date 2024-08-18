@@ -1,7 +1,6 @@
 package login
 
 import (
-	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -20,21 +19,21 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.Form.Get("username")
 	password := tools.HashThis(r.Form.Get("password"))
-	if ValidateUser(databasetools.DataBase, username, password) {
+	if ValidateUser(username, password) {
 		sessionId := tools.GenerateUUID()
-		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
-		userId := user.ReadUser(query, arguments)
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
+		user := user.ReadUser(query, arguments)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
-		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId[0].UserId}})
-		session.CreateSession(databasetools.DataBase, query, arguments)
+		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
+		session.CreateSession(query, arguments)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("User not found in login process handler ")
 	}
 
 }
-func ValidateUser(db *sql.DB, username string, password string) bool {
-	rows, err := db.Query("SELECT password FROM users where username=?", username)
+func ValidateUser(username string, password string) bool {
+	rows, err := databasetools.DataBase.Query("SELECT password FROM users where username=?", username)
 	if err != nil {
 		fmt.Println(err)
 	}

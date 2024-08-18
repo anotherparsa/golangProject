@@ -8,8 +8,8 @@ import (
 	"todoproject/pkg/databasetools"
 )
 
-func CreateSession(database *sql.DB, query string, arguments []interface{}) {
-	safequery, err := database.Prepare(query)
+func CreateSession(query string, arguments []interface{}) {
+	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
 
