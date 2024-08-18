@@ -8,4 +8,4 @@ fix session problem
 *csrf token for login page
 *add category for tasks
 *admin page
-
+*check for methods to be POST in form submitions.

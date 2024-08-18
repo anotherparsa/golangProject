@@ -1,0 +1,7 @@
+there is an array with some numbers on it.
+the goal is to find the indices of two numbers that adds up to the target.
+
+we can use nested loop with two loops.
+to check all the numbers combinations.
+if the sum of i and j indices adds up to target 
+then it returns an array with those indices
