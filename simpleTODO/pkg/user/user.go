@@ -37,7 +37,7 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 	user := models.User{}
 	users := []models.User{}
 	for rows.Next() {
-		err = rows.Scan(&user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
+		err = rows.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -54,7 +54,7 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	userId := strings.TrimPrefix(r.URL.Path, "/editaccount/")
-	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
+	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
 	user := ReadUser(Query, arguments)
 	template.Execute(w, user[0])
 }
@@ -62,7 +62,7 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 //processing
 func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("firstName")}, {"lastName", r.Form.Get("lastName")}, {"email", r.Form.Get("email")}, {"phoneNumber", r.Form.Get("phoneNumber")}})
+	Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
 	UpdateUser(Query, arguments)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
