@@ -1,7 +1,60 @@
 there is an array with some numbers on it.
 the goal is to find the indices of two numbers that adds up to the target.
+for example if I have an array like this:
+numbers = {3, 5, 1, 4, -8}
+and the target = 5  
+I have to find a pair of (x, y) in a way that x + y = 5
+
+one approach is start from beginning and check every possible pair of 
+number to see if the sum is queal to the target, until you find the solution.
+
+EX:
+Target = 5
+number[0]=> 3 + numbers[1]=> 5 = 8 N
+number[0]=> 3 + numbers[2]=> 1 = 4 N 
+number[0]=> 3 + numbers[3]=> 4 = 7 N
+number[0]=> 3 + numbers[4]=> -8 = -5 N
+number[1]=> 5 + numbers[2]=> 1 = 6 N
+number[1]=> 5 + numbers[3]=> 4 = 9 N
+number[1]=> 5 + numbers[4]=> -8 = -3 N
+number[2]=> 1 + numbers[3]=> 4 = 5 Y
+number[2]=> 1 + numbers[4]=> -8 = -7 N
+number[3]=> 4 + numbers[4]=> -8 = -4 N
+
+in this example we can return numbers[2] and numbers[3]
+beacause numbers[2] => 1 + numbers[3] => 4 = target => 5
 
 we can use nested loop with two loops.
 to check all the numbers combinations.
 if the sum of i and j indices adds up to target 
 then it returns an array with those indices
+
+another approach is while evaluating the elements, we have access to the currently accessed element.
+that means it can be true that current_value + x = target.
+and we can calculate it by target - current_value = x
+we just have to check if the x exists in the array or not.
+if it does then we found the solution without the need to evaluate all possible combination.
+we need to keep track of where we seen a specific number and for that we can use a map.
+for example if I have an array like this:
+numbers = {4, -2, 5, 0, 6, 3, 2, 7}
+and the target = 1
+and I have a formula like this 
+current_value + x = Target
+i start at 4 which means
+4 + x = 1 => x = -3
+I need to check if I've seen the -3 or not. but at the start the map is empty
+but i write the map like this map{4 : 0} to remember that I've seen the number 4
+at index 0 in case I found a number that 4 can be its x.
+the next number is -2 which means.
+-2 + x = 1 => x = 3
+again I need to check if I've seen the 3 or not. I'll check the map and there is no result.
+I'll go to the next number in the array and also put the -2 into the map for future use.
+the next number is 5 which means:
+5 + x = 1 => x = -4
+I need to check if I've seen the -4 or not.
+and you do this until you find the correct pair of numbers which in this case is :
+{5, 1}
+when you reach numbers[5] => 3 which means 
+3 + x = 1 => x = -2 and when you check the map you can see you already seen the -2
+at index 1.
+
