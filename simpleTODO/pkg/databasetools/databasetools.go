@@ -13,7 +13,7 @@ const (
 	password = "testpass"
 	hostname = "localhost"
 	port     = "3306"
-	database = "users"
+	database = "todo"
 )
 
 func connect() (*sql.DB, error) {

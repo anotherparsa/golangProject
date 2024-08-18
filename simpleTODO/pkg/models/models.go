@@ -15,6 +15,7 @@ type Task struct {
 	Id          int
 	Author      string
 	Priority    string
+	Category    string
 	Title       string
 	Description string
 	IsDone      string

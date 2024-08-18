@@ -27,12 +27,11 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-func WhoIsThis(database *sql.DB, session_id string) (string, string) {
+func WhoIsThis(database *sql.DB, session_id string) (string, string, string) {
 	var user_id string
 	var username string
 	var users_id string
 	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
-
 	safequery, err := database.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +61,7 @@ func WhoIsThis(database *sql.DB, session_id string) (string, string) {
 			fmt.Println(err)
 		}
 	}
-	return username, users_id
+	return username, users_id, user_id
 }
 
 func ReadSessions(database *sql.DB) {
@@ -78,4 +77,27 @@ func ReadSessions(database *sql.DB) {
 			fmt.Println(err)
 		}
 	}
+}
+
+func ReturnUsersUserID(sessionId string) string {
+	var user_id string
+	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", sessionId}}, [][]string{})
+	fmt.Println(query)
+	fmt.Println(arguments...)
+	safequeyr, err := databasetools.DataBase.Prepare(query)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	rows, err := safequeyr.Query(arguments...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&user_id); err != nil {
+			fmt.Println(err)
+		}
+	}
+	return user_id
 }

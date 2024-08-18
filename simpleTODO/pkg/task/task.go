@@ -19,7 +19,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
 		r.ParseForm()
-		author, _ := session.WhoIsThis(databasetools.DataBase, cookie.Value)
+		author := session.ReturnUsersUserID(cookie.Value)
 		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
 		CreateTask(query, arguments)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)

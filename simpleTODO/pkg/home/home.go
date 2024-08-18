@@ -20,11 +20,11 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || cookie == nil {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
-		username, userid := session.WhoIsThis(databasetools.DataBase, cookie.Value)
+		username, usersid, userId := session.WhoIsThis(databasetools.DataBase, cookie.Value)
 		template, _ := template.ParseFiles("../../pkg/home/template/home.html")
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"author", username}}, [][]string{})
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 		tasks := task.ReadTask(query, arguments)
-		Data := dataToSend{Username: username, Userid: userid, Tasks: tasks}
+		Data := dataToSend{Username: username, Userid: usersid, Tasks: tasks}
 		template.Execute(w, Data)
 	}
 }
