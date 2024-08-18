@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/homestyle.css">
+    <title>Edit User</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit your Account</h1>
+        <form action="/edituserprocessor" method="post">
+            <div class="form-group">
+                <input type="hidden" name="id" value={{.ID}}>
+                <label for="username">current username : </label>
+                <input type="text" id="username" name="username" value={{.Username}}>
+            </div>
+
+            <div class="form-group">
+                <label for="FirstName">Current First name : </label>
+                <input type="text" id="FirstName" name="FirstName" value={{.FirstName}}>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Current Last name : </label>
+                <input type="text" id="LastName" name="LastName" value={{.LastName}}>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Current Email : </label>
+                <input type="text" id="Email" name="Email" value={{.Email}}>
+            </div>
+
+            <div class="form-group">
+                <label for="PhoneNumber">Current PhoneNumber : </label>
+                <input type="text" id="PhoneNumber" name="PhoneNumber" value={{.PhoneNumber}}>
+            </div>
+
+            <button type="submit" id="submit">Update User Info</button>
+        </form>
+        </div>
+    </div>
+</body>
+</html>

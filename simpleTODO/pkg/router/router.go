@@ -9,6 +9,7 @@ import (
 	"todoproject/pkg/session"
 	"todoproject/pkg/signup"
 	"todoproject/pkg/task"
+	"todoproject/pkg/user"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +32,12 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		task.DeleteTaskProcessor(w, r)
 	} else if urlPath == "/edittaskprocessor" {
 		task.UpdateTaskProcessor(w, r)
+	} else if urlPath == "/edituserprocessor" {
+		user.UpdateUserProcessor(w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/edittask/") {
 		task.UpdateTaskPageHandler(w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/editaccount/") {
+		user.UpdateUserPageHandler(w, r)
 	} else {
 		fmt.Fprintf(w, "Page not found")
 	}

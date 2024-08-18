@@ -40,7 +40,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 
 				//Create user query
 				query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("password"))}, {"firstName", r.Form.Get("firstName")}, {"lastName", r.Form.Get("lastName")}, {"email", r.Form.Get("email")}, {"phoneNumber", r.Form.Get("phoneNumber")}})
-				user.CreateUser(databasetools.DataBase, query, arguments)
+				user.CreateUser(query, arguments)
 
 				//Create Session query
 				query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})

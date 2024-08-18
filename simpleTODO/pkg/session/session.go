@@ -27,9 +27,10 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-func WhoIsThis(database *sql.DB, session_id string) string {
+func WhoIsThis(database *sql.DB, session_id string) (string, string) {
 	var user_id string
 	var username string
+	var users_id string
 	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
 
 	safequery, err := database.Prepare(query)
@@ -46,7 +47,7 @@ func WhoIsThis(database *sql.DB, session_id string) string {
 			fmt.Println(err)
 		}
 	}
-	query, arguments = databasetools.QuerryMaker("select", []string{"username"}, "users", [][]string{{"userId", user_id}}, [][]string{})
+	query, arguments = databasetools.QuerryMaker("select", []string{"username", "id"}, "users", [][]string{{"userId", user_id}}, [][]string{})
 	safequery, err = database.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
@@ -57,11 +58,11 @@ func WhoIsThis(database *sql.DB, session_id string) string {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&username); err != nil {
+		if err := rows.Scan(&username, &users_id); err != nil {
 			fmt.Println(err)
 		}
 	}
-	return username
+	return username, users_id
 }
 
 func ReadSessions(database *sql.DB) {

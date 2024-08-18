@@ -23,7 +23,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	if ValidateUser(databasetools.DataBase, username, password) {
 		sessionId := tools.GenerateUUID()
 		query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
-		userId := user.ReadUser(databasetools.DataBase, query, arguments)
+		userId := user.ReadUser(query, arguments)
 		http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId})
 		query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId[0].UserId}})
 		session.CreateSession(databasetools.DataBase, query, arguments)

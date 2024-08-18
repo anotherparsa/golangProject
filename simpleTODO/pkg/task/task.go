@@ -19,7 +19,8 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 	} else {
 		r.ParseForm()
-		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", session.WhoIsThis(databasetools.DataBase, cookie.Value)}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
+		author, _ := session.WhoIsThis(databasetools.DataBase, cookie.Value)
+		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
 		CreateTask(query, arguments)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
@@ -53,12 +54,10 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 	tasks := []models.Task{}
 	for rows.Next() {
 		task := models.Task{}
-
 		err := rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Title, &task.Description, &task.IsDone)
 		if err != nil {
 			fmt.Println(err)
 		}
-
 		tasks = append(tasks, task)
 	}
 	return tasks

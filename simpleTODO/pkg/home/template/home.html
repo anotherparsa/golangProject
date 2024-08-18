@@ -9,9 +9,10 @@
 <body>
     <div class="container">
         <h1>To-Do App</h1>
+        <h1>welcome {{.Username}}</h1>
         <div class="buttons">
             <a href="/logout"><button>Logout</button></a>
-            <button>Button 2</button>
+            <a href="/editaccount/{{.Userid}}"><button>Edit Account</button></a>
             <button>Button 3</button>
             <button>Button 4</button>
             <button>Button 5</button>
@@ -43,7 +44,7 @@
 
 
         <div class="tasks">
-            {{range .}}
+            {{range .Tasks}}
             <div class="task">
                 <h3>Title: </h3>
                 <p>{{.Title}}</p><br>
