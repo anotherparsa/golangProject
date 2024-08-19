@@ -17,4 +17,4 @@ fix session problem
 *validate task existense when you're deleting it.
 *authorize the user for deleting or editing.
 *use CSRF protection for every form submittion.
-
+*send 405 code for using of wrong method.
