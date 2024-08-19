@@ -66,14 +66,27 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 //Update
 //page handler
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
-	if err != nil {
-		fmt.Println(err)
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie == nil {
+		http.Redirect(w, r, "/signup", http.StatusSeeOther)
+	} else {
+		_, _, userId := session.WhoIsThis(cookie.Value)
+
+		taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		task := ReadTask(Query, arguments)
+		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		if userId != task[0].Author {
+			fmt.Fprintf(w, "You are not authorized")
+		} else {
+			template.Execute(w, task[0])
+		}
+
 	}
-	taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
-	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
-	task := ReadTask(Query, arguments)
-	template.Execute(w, task[0])
+
 }
 
 //processor

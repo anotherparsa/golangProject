@@ -8,6 +8,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var DataBase *sql.DB
+
 const (
 	username = "testuser"
 	password = "testpass"
@@ -21,14 +23,10 @@ func connect() (*sql.DB, error) {
 	return sql.Open("mysql", dsn)
 }
 
-var DataBase *sql.DB
-
 func CreateDatabase() {
 	DataBase, _ = connect()
 }
 func isValidIdentifier(identifier string) bool {
-	// This regex allows alphanumeric characters and underscores
-	// You may want to adjust this based on your database's naming conventions
 	validIdentifier := regexp.MustCompile("^[a-zA-Z_][a-zA-Z0-9_]*$")
 	return validIdentifier.MatchString(identifier)
 }

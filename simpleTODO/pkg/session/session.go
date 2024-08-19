@@ -27,12 +27,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-func WhoIsThis(database *sql.DB, session_id string) (string, string, string) {
+func WhoIsThis(session_id string) (string, string, string) {
 	var user_id string
 	var username string
 	var users_id string
 	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
-	safequery, err := database.Prepare(query)
+	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func WhoIsThis(database *sql.DB, session_id string) (string, string, string) {
 		}
 	}
 	query, arguments = databasetools.QuerryMaker("select", []string{"username", "id"}, "users", [][]string{{"userId", user_id}}, [][]string{})
-	safequery, err = database.Prepare(query)
+	safequery, err = databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
 	}
