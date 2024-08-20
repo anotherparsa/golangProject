@@ -10,7 +10,7 @@ import (
 	"todoproject/pkg/session"
 )
 
-//CRUD
+//CRUD operations for tasks
 //Create
 //processor
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {

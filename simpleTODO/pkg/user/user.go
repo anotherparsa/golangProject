@@ -9,7 +9,7 @@ import (
 	"todoproject/pkg/models"
 )
 
-//CRUD
+//CRUD operation for users
 //Create
 func CreateUser(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)

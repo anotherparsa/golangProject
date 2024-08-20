@@ -18,11 +18,13 @@ const (
 	database = "todo"
 )
 
+//opening a connection 
 func connect() (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
 	return sql.Open("mysql", dsn)
 }
 
+//caling the connnect function
 func CreateDatabase() {
 	DataBase, _ = connect()
 }
@@ -31,6 +33,7 @@ func isValidIdentifier(identifier string) bool {
 	return validIdentifier.MatchString(identifier)
 }
 
+//making queries for sql
 func QuerryMaker(operation string, columns []string, table string, conditions [][]string, values [][]string) (string, []interface{}) {
 	var args []interface{}
 	var query string

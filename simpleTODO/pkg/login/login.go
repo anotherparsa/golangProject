@@ -12,6 +12,7 @@ import (
 
 var csrft string
 
+//generating csrft and set it as a cookie to be retrieved in login process handler and be checked.
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	csrft = tools.GenerateUUID()
 	http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})

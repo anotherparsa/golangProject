@@ -1,5 +1,7 @@
 package models
 
+//defining model structure for users, tasks, sessions.
+
 type User struct {
 	ID          int
 	UserId      string
