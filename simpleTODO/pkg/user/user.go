@@ -61,10 +61,15 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 //processing
 func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
-	UpdateUser(Query, arguments)
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	if r.Method == "POST" {
+		r.ParseForm()
+		Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
+		UpdateUser(Query, arguments)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else {
+		fmt.Println("wrong method")
+		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
+	}
 }
 
 //applying in the database{

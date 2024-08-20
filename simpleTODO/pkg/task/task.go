@@ -14,15 +14,20 @@ import (
 //Create
 //processor
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/signup", http.StatusSeeOther)
+	if r.Method == "POST" {
+		cookie, err := r.Cookie("session_id")
+		if err != nil || cookie == nil {
+			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+		} else {
+			r.ParseForm()
+			author := session.ReturnUsersUserID(cookie.Value)
+			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
+			CreateTask(query, arguments)
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+		}
 	} else {
-		r.ParseForm()
-		author := session.ReturnUsersUserID(cookie.Value)
-		query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
-		CreateTask(query, arguments)
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		fmt.Println("Wrong method")
+		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -66,27 +71,32 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 //Update
 //page handler
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/signup", http.StatusSeeOther)
-	} else {
-		_, _, userId := session.WhoIsThis(cookie.Value)
-
-		taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
-		task := ReadTask(Query, arguments)
-		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
-		if err != nil {
-			fmt.Println(err)
-		}
-		if userId != task[0].Author {
-			fmt.Fprintf(w, "You are not authorized")
+	if r.Method == "POST" {
+		cookie, err := r.Cookie("session_id")
+		if err != nil || cookie == nil {
+			http.Redirect(w, r, "/signup", http.StatusSeeOther)
 		} else {
-			template.Execute(w, task[0])
+			_, _, userId := session.WhoIsThis(cookie.Value)
+
+			taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+			task := ReadTask(Query, arguments)
+			template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
+			if err != nil {
+				fmt.Println(err)
+			}
+			if userId != task[0].Author {
+				fmt.Fprintf(w, "You are not authorized")
+			} else {
+				template.Execute(w, task[0])
+			}
+
 		}
 
+	} else {
+		fmt.Println("Wrong method")
+		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
 	}
-
 }
 
 //processor
