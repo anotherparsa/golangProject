@@ -71,40 +71,40 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 //Update
 //page handler
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		cookie, err := r.Cookie("session_id")
-		if err != nil || cookie == nil {
-			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie == nil {
+		http.Redirect(w, r, "/signup", http.StatusSeeOther)
+	} else {
+		_, _, userId := session.WhoIsThis(cookie.Value)
+
+		taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		task := ReadTask(Query, arguments)
+		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		if userId != task[0].Author {
+			fmt.Fprintf(w, "You are not authorized")
 		} else {
-			_, _, userId := session.WhoIsThis(cookie.Value)
-
-			taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
-			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
-			task := ReadTask(Query, arguments)
-			template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
-			if err != nil {
-				fmt.Println(err)
-			}
-			if userId != task[0].Author {
-				fmt.Fprintf(w, "You are not authorized")
-			} else {
-				template.Execute(w, task[0])
-			}
-
+			template.Execute(w, task[0])
 		}
 
-	} else {
-		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
 	}
+
 }
 
 //processor
 func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
-	UpdateTask(Query, arguments)
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	if r.Method == "POST" {
+		r.ParseForm()
+		Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
+		UpdateTask(Query, arguments)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else {
+		fmt.Println("Wrong method")
+		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
+	}
 }
 
 func UpdateTask(query string, arguments []interface{}) {
