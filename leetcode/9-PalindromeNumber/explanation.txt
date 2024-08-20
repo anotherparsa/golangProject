@@ -1,0 +1,31 @@
+we need to check if a number is palindrome or not.
+An integer is a palindrome when it reads the same forward and backward. 
+for example 121 is a palindrome number because it doesn't matter in which direction you see it.
+it still 121 but 123 is not palindrom because 123 != 321
+it's same as 121.
+a negative number can't be palindrome because negative sign is always in the front so -121 != 121-
+a non zero number that ends in zero it's not a palindrom.
+
+
+1-one approach is to reverse the entire number and check if it's the same as the original number.
+but it's possible you exceed the limit of maximum integer leading to overflow
+
+isPalindromeFirst Approach:
+we're going to reverse the number.
+first we check if the number is negative or not, if it is, it immediately returns false since the negative numbers can't be palindrome.
+then we store the original number into a variable to then compare it with the original value
+then we create another variable called reversed number to store the reversed number.
+we use a loop until the number passed become zero.
+first we get the remainder of that number by 10 so if it's 121 it would be like 121 % 10 = 1
+that's the last digit of the number.
+now we need to remove this digit from the actual number.
+we do it by dividing it by 10 so if it's 121 it would be like 121 / 10 = 12
+then we add the remainder we found to the end of reversed number.
+in this loop we simply get the last digit of the original number put it into the reverse number by each iteration.
+and finaly we compare the original value and the reversed value to see if a number is palindrom or not.
+
+2-one approach is to convert the number into a string and then reverse it and then see if the reversed string and the original are the same or not
+takes the original text and puts into a slice of runes.
+in loop, i starts from the beginning and j starts from the ending.
+i will be incremented and j will be decremented until i and j meets(while i < j)
+by each iteration it will swap the rune[i] with rune[j] and this way the string is reversed.
