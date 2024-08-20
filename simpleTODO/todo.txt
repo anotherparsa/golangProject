@@ -13,3 +13,5 @@ fix session problem
 *authorize the user for deleting or editing.
 *uploading a pic or video or a file alongside each task.
 *user profile picture ?
+*done / undone button for tasks
+*validate users's current password for editing account info
