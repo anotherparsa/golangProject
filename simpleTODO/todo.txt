@@ -2,18 +2,14 @@ CRUD for users, sessions.
 fix session problem 
 *delete accound
 *change accounts detail (username, password, ....)
-*user input validation
 *server side input validation
 *validating unique username, email, phone number
-*csrf token for login page
 *add category for tasks
 *admin page
-*check for methods to be POST in form submitions.
 *adding time stamps for tables, created time, updated time, expires at?
 *check for session_id validity, like expired session.
 *password reset
-*form input validation
-*Error 1054 (42S22): Unknown column 'author' in 'field list'
 *validate task existense when you're deleting it.
 *authorize the user for deleting or editing.
-*use CSRF protection for every form submittion.
+*uploading a pic or video or a file alongside each task.
+*user profile picture ?
