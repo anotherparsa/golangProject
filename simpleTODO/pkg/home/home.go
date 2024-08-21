@@ -26,7 +26,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		username, usersid, userId := session.WhoIsThis(cookie.Value)
 		template, _ := template.ParseFiles("../../pkg/home/template/home.html")
 		//making query to get tasks
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"author", userId}}, [][]string{})
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 		//getting tasks
 		tasks := task.ReadTask(query, arguments)
 		Data := dataToSend{Username: username, Userid: usersid, Tasks: tasks}

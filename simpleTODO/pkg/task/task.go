@@ -21,13 +21,13 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		} else {
 			r.ParseForm()
 			author := session.ReturnUsersUserID(cookie.Value)
-			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "title", "description", "isDone"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"isDone", "0"}})
+			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
 			CreateTask(query, arguments)
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		}
 	} else {
 		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -59,7 +59,7 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 	tasks := []models.Task{}
 	for rows.Next() {
 		task := models.Task{}
-		err := rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Title, &task.Description, &task.IsDone)
+		err := rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Category, &task.Title, &task.Description, &task.Finished)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -78,7 +78,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		_, _, userId := session.WhoIsThis(cookie.Value)
 
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
 		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
 		if err != nil {
@@ -100,10 +100,10 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
 		UpdateTask(Query, arguments)
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/home", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -125,7 +125,7 @@ func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
 	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 	DeleteTask(query, arguments)
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 }
 
 //apply in database

@@ -31,7 +31,7 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 		//dedicated to users
 		if urlPath == "/users/signup" {
 			signup.SignupPageHander(w, r)
-		} else if urlPath == "/user/home" {
+		} else if urlPath == "/users/home" {
 			home.HomePageHandler(w, r)
 		} else if urlPath == "/users/logout" {
 			session.Logout(w, r)

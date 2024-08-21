@@ -28,6 +28,13 @@
                 <label for="description">Description:</label>
                 <input type="text" id="description" name="description" placeholder="Enter task description">
             </div>
+
+                
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" id="category" name="category" placeholder="Enter task category">
+            </div>
+    
     
             <div class="form-group">
                 <label for="priority">Priority:</label>
@@ -50,10 +57,13 @@
                 <p>{{.Title}}</p><br>
                 <h3>Description: </h3>
                 <p>{{.Description}}</p><br>
+                <h3>Category: </h3>
+                <p>{{.Category}}</p><br>
                 <h3>Priority: </h3>
                 <p>{{.Priority}}</p><br>
                 <h3>Completed: </h3>
-                <p>{{.IsDone}}</p><br>
+                <p>{{.Finished}}</p><br>
+
                 <a href="/tasks/deletetask/{{.Id}}"><button>Delete</button></a>
                 <a href="/tasks/edittask/{{.Id}}"><button>Edit</button></a>
             </div>

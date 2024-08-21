@@ -62,10 +62,10 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-					http.Redirect(w, r, "/home", http.StatusSeeOther)
+					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 				}
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-				http.Redirect(w, r, "/home", http.StatusSeeOther)
+				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 			}
 		}
 	} else {
