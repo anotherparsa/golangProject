@@ -1,4 +1,4 @@
-package login
+package userlogin
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/session"
 	"todoproject/pkg/tools"
-	"todoproject/pkg/user"
+	"todoproject/pkg/user/useruser"
 )
 
 var csrft string
@@ -17,7 +17,7 @@ var csrft string
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	csrft = tools.GenerateUUID()
 	http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
-	template, _ := template.ParseFiles("../../pkg/login/template/login.html")
+	template, _ := template.ParseFiles("../../pkg/user/userlogin/template/userlogin.html")
 	template.Execute(w, nil)
 }
 
@@ -41,7 +41,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 					if ValidateUser(username, password) {
 						sessionId := tools.GenerateUUID()
 						query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
-						user := user.ReadUser(query, arguments)
+						user := useruser.ReadUser(query, arguments)
 						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 						query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
 						session.CreateSession(query, arguments)

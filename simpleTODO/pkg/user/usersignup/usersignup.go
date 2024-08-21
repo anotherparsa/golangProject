@@ -1,4 +1,4 @@
-package signup
+package usersignup
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/session"
 	"todoproject/pkg/tools"
-	"todoproject/pkg/user"
+	"todoproject/pkg/user/useruser"
 )
 
 var csrft string
@@ -17,7 +17,7 @@ var csrft string
 func SignupPageHander(w http.ResponseWriter, r *http.Request) {
 	csrft = tools.GenerateUUID()
 	http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
-	template, _ := template.ParseFiles("../../pkg/signup/template/signup.html")
+	template, _ := template.ParseFiles("../../pkg/user/usersignup/template/usersignup.html")
 	template.Execute(w, nil)
 }
 
@@ -49,7 +49,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 
 						//Create user query
 						query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", tools.HashThis(password)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}, {"rule", "user"}, {"suspended", "no"}})
-						user.CreateUser(query, arguments)
+						useruser.CreateUser(query, arguments)
 
 						//Create Session query
 						query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})

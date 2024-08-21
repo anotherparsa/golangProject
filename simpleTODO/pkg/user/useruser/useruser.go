@@ -1,4 +1,4 @@
-package user
+package useruser
 
 import (
 	"fmt"
@@ -49,7 +49,7 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 //UPDATE
 //page handler
 func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("../../pkg/user/template/edituser.html")
+	template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
 	if err != nil {
 		fmt.Println(err)
 	}

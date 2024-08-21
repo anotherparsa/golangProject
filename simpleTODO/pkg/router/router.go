@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"todoproject/pkg/admin"
-	"todoproject/pkg/home"
-	"todoproject/pkg/login"
+	"todoproject/pkg/admin/adminhome"
+	"todoproject/pkg/admin/adminlogin"
 	"todoproject/pkg/session"
-	"todoproject/pkg/signup"
-	"todoproject/pkg/task"
-	"todoproject/pkg/user"
+	"todoproject/pkg/user/userhome"
+	"todoproject/pkg/user/userlogin"
+	"todoproject/pkg/user/usersignup"
+	"todoproject/pkg/user/usertask"
+	"todoproject/pkg/user/useruser"
 )
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,36 +20,38 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(urlPath, "/tasks/") {
 		//dedicated to tasks
 		if urlPath == "/tasks/createtaskprocess" {
-			task.CreateTaskProcessor(w, r)
+			usertask.CreateTaskProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/tasks/deletetask") {
-			task.DeleteTaskProcessor(w, r)
+			usertask.DeleteTaskProcessor(w, r)
 		} else if urlPath == "/tasks/edittaskprocessor" {
-			task.UpdateTaskProcessor(w, r)
+			usertask.UpdateTaskProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/tasks/edittask") {
-			task.UpdateTaskPageHandler(w, r)
+			usertask.UpdateTaskPageHandler(w, r)
 		}
 	} else if strings.HasPrefix(urlPath, "/users/") {
 		//dedicated to users
 		if urlPath == "/users/signup" {
-			signup.SignupPageHander(w, r)
+			usersignup.SignupPageHander(w, r)
 		} else if urlPath == "/users/home" {
-			home.HomePageHandler(w, r)
+			userhome.HomePageHandler(w, r)
 		} else if urlPath == "/users/logout" {
 			session.Logout(w, r)
 		} else if urlPath == "/users/login" {
-			login.LoginPageHandler(w, r)
+			userlogin.LoginPageHandler(w, r)
 		} else if urlPath == "/users/signupprocess" {
-			signup.SignupProcessHandler(w, r)
+			usersignup.SignupProcessHandler(w, r)
 		} else if urlPath == "/users/loginprocess" {
-			login.LoginProcessHandler(w, r)
+			userlogin.LoginProcessHandler(w, r)
 		} else if urlPath == "/users/edituserprocessor" {
-			user.UpdateUserProcessor(w, r)
+			useruser.UpdateUserProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/users/editaccount") {
-			user.UpdateUserPageHandler(w, r)
+			useruser.UpdateUserPageHandler(w, r)
 		}
 	} else if strings.HasPrefix(urlPath, "/admin") {
-		if urlPath == "/admin/home" {
-			admin.AdminHomePageHandler(w, r)
+		if urlPath == "/admin/login" {
+			adminlogin.AdminLoginPageHandler(w, r)
+		} else if urlPath == "/admin/home" {
+			adminhome.AdminHomePageHandler(w, r)
 		}
 	} else {
 		fmt.Fprintf(w, "Page Not Found")

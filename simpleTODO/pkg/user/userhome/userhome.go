@@ -1,4 +1,4 @@
-package home
+package userhome
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
 	"todoproject/pkg/session"
-	"todoproject/pkg/task"
+	"todoproject/pkg/user/usertask"
 )
 
 type dataToSend struct {
@@ -24,11 +24,11 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("cookie has not found")
 	} else {
 		username, usersid, userId := session.WhoIsThis(cookie.Value)
-		template, _ := template.ParseFiles("../../pkg/home/template/home.html")
+		template, _ := template.ParseFiles("../../pkg/user/userhome/template/userhome.html")
 		//making query to get tasks
 		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 		//getting tasks
-		tasks := task.ReadTask(query, arguments)
+		tasks := usertask.ReadTask(query, arguments)
 		Data := dataToSend{Username: username, Userid: usersid, Tasks: tasks}
 		template.Execute(w, Data)
 	}

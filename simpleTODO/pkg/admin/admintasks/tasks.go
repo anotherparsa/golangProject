@@ -1,4 +1,4 @@
-package tasks
+package admintasks
 
 import (
 	"fmt"

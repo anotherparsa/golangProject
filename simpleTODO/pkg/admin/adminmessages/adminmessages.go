@@ -1,4 +1,4 @@
-package users
+package adminmessages
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"todoproject/pkg/databasetools"
 )
 
-func GetTotalUsers(query string, arguments []interface{}) string {
+func GetTotalMessages(query string, arguments []interface{}) string {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)

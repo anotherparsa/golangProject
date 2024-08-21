@@ -1,4 +1,4 @@
-package task
+package usertask
 
 import (
 	"fmt"
@@ -80,7 +80,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
 		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
-		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
+		template, err := template.ParseFiles("../../pkg/user/usertask/template/useredittask.html")
 		if err != nil {
 			fmt.Println(err)
 		}
