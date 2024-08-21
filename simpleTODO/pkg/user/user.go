@@ -53,8 +53,11 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	userId := strings.TrimPrefix(r.URL.Path, "/editaccount/")
+	userId := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
 	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
+	fmt.Println(userId)
+	fmt.Println(Query)
+	fmt.Println(arguments...)
 	user := ReadUser(Query, arguments)
 	template.Execute(w, user[0])
 }

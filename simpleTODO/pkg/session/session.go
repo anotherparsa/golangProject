@@ -23,8 +23,8 @@ func CreateSession(query string, arguments []interface{}) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{Name: "session_id", MaxAge: -1})
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.SetCookie(w, &http.Cookie{Name: "session_id", MaxAge: -1, Path: "/"})
+	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
 
 //finding a corespounding user_id user's id and username from a session id.
@@ -83,8 +83,6 @@ func ReadSessions(database *sql.DB) {
 func ReturnUsersUserID(sessionId string) string {
 	var user_id string
 	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", sessionId}}, [][]string{})
-	fmt.Println(query)
-	fmt.Println(arguments...)
 	safequeyr, err := databasetools.DataBase.Prepare(query)
 
 	if err != nil {

@@ -11,14 +11,14 @@
         <h1>To-Do App</h1>
         <h1>welcome {{.Username}}</h1>
         <div class="buttons">
-            <a href="/logout"><button>Logout</button></a>
-            <a href="/editaccount/{{.Userid}}"><button>Edit Account</button></a>
+            <a href="/users/logout"><button>Logout</button></a>
+            <a href="/users/editaccount/{{.Userid}}"><button>Edit Account</button></a>
             <button>Button 3</button>
             <button>Button 4</button>
             <button>Button 5</button>
         </div>
 
-        <form action="/createtaskprocess" method="post">
+        <form action="/tasks/createtaskprocess" method="post">
             <div class="form-group">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" placeholder="Enter task title">
@@ -54,8 +54,8 @@
                 <p>{{.Priority}}</p><br>
                 <h3>Completed: </h3>
                 <p>{{.IsDone}}</p><br>
-                <a href="/deletetask/{{.Id}}"><button>Delete</button></a>
-                <a href="/edittask/{{.Id}}"><button>Edit</button></a>
+                <a href="/tasks/deletetask/{{.Id}}"><button>Delete</button></a>
+                <a href="/tasks/edittask/{{.Id}}"><button>Edit</button></a>
             </div>
             {{end}}
         </div>

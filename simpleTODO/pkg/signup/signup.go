@@ -26,11 +26,11 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 		sent_csrf_token, err := r.Cookie("csrft")
 		if err != nil || sent_csrf_token == nil {
 			fmt.Println("csrft not found")
-			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 		} else {
 			if sent_csrf_token.Value != csrft {
 				fmt.Println("invalid csrft")
-				http.Redirect(w, r, "/signup", http.StatusSeeOther)
+				http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 			} else {
 				_, err := r.Cookie("session_id")
 				if err != nil {
@@ -45,7 +45,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 					if tools.ValidateSignupFormInputs(username, password, firstName, lastName, email, phoneNumber) {
 						userId := tools.GenerateUUID()
 						sessionId := tools.GenerateUUID()
-						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
+						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 
 						//Create user query
 						query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", tools.HashThis(password)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
@@ -58,7 +58,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 					} else {
 						fmt.Println("Invalid inputs")
-						http.Redirect(w, r, "/signup", http.StatusSeeOther)
+						http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 					}
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
@@ -70,6 +70,6 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		fmt.Println("wrong method")
-		http.Redirect(w, r, "/signup", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/signup", http.StatusMethodNotAllowed)
 	}
 }

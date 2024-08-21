@@ -27,11 +27,11 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		sent_csrf_token, err := r.Cookie("csrft")
 		if err != nil || sent_csrf_token == nil {
 			fmt.Println("csrft not found")
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		} else {
 			if sent_csrf_token.Value != csrft {
 				fmt.Println("invalid csrft")
-				http.Redirect(w, r, "/login", http.StatusSeeOther)
+				http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 			} else {
 				_, err := r.Cookie("session_id")
 				if err != nil {
@@ -42,7 +42,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 						sessionId := tools.GenerateUUID()
 						query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
 						user := user.ReadUser(query, arguments)
-						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
+						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 						query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
 						session.CreateSession(query, arguments)
 						http.Redirect(w, r, "/home", http.StatusSeeOther)
@@ -54,7 +54,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		fmt.Println("wrong method")
-		http.Redirect(w, r, "/login", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/login", http.StatusMethodNotAllowed)
 	}
 }
 func ValidateUser(username string, password string) bool {

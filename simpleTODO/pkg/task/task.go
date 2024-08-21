@@ -17,7 +17,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		cookie, err := r.Cookie("session_id")
 		if err != nil || cookie == nil {
-			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 		} else {
 			r.ParseForm()
 			author := session.ReturnUsersUserID(cookie.Value)
@@ -73,11 +73,11 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/signup", http.StatusSeeOther)
+		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 	} else {
 		_, _, userId := session.WhoIsThis(cookie.Value)
 
-		taskID := strings.TrimPrefix(r.URL.Path, "/edittask/")
+		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
 		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "isDone"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
 		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
@@ -122,7 +122,7 @@ func UpdateTask(query string, arguments []interface{}) {
 //Delete
 //processor
 func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	taskID := strings.TrimPrefix(r.URL.Path, "/deletetask/")
+	taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
 	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 	DeleteTask(query, arguments)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
