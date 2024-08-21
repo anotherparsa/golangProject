@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 80px; /* Increased padding */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 1000px; /* Increased width to double */
+    text-align: left;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between; /* Keep buttons evenly spaced */
+    margin-bottom: 60px; /* Increased margin */
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 24px 40px; /* Increased padding for buttons */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    flex-grow: 1; /* Allow buttons to grow equally */
+    margin-right: 20px; /* Add margin between buttons */
+}
+
+button:last-child {
+    margin-right: 0; /* Remove margin for the last button */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.stats {
+    margin-top: 40px; /* Increased margin for stats */
+}
+
+.stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 0; /* Increased padding for stats */
+}
+
+label {
+    font-weight: bold;
+}
+
+span {
+    color: #333;
+}
