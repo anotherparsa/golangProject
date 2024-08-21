@@ -78,7 +78,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		_, _, userId := session.WhoIsThis(cookie.Value)
 
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
 		template, err := template.ParseFiles("../../pkg/task/template/edittask.html")
 		if err != nil {
@@ -98,7 +98,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
-		Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}})
+		Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"category", r.Form.Get("category")}})
 		UpdateTask(Query, arguments)
 		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	} else {
