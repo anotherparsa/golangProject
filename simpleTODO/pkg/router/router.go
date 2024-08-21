@@ -9,6 +9,7 @@ import (
 	"todoproject/pkg/session"
 	"todoproject/pkg/user/userhome"
 	"todoproject/pkg/user/userlogin"
+	"todoproject/pkg/user/usermessages"
 	"todoproject/pkg/user/usersignup"
 	"todoproject/pkg/user/usertask"
 	"todoproject/pkg/user/useruser"
@@ -46,6 +47,10 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 			useruser.UpdateUserProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/users/editaccount") {
 			useruser.UpdateUserPageHandler(w, r)
+		} else if urlPath == "/users/messages" {
+			usermessages.UserMessagePageHandler(w, r)
+		} else if urlPath == "/users/createmessageprocessor" {
+			usermessages.CreateUserMessageProcessor(w, r)
 		}
 	} else if strings.HasPrefix(urlPath, "/admin") {
 		if urlPath == "/admin/login" {
