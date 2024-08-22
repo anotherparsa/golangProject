@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/homestyle.css">
+    <title>To-Do App</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin messages</h1>
+        <h1>Messages sent by users</h1>
+
+        <div class="tasks">
+            {{range .}}
+            <div class="task">
+                <h3>Author: </h3>
+                <p>{{.Author}}</p><br>
+                <h3>Title: </h3>
+                <p>{{.Title}}</p><br>
+                <h3>Description: </h3>
+                <p>{{.Description}}</p><br>
+                <h3>Category: </h3>
+                <p>{{.Category}}</p><br>
+                <h3>Priority: </h3>
+                <p>{{.Priority}}</p><br>
+                <h3>Completed: </h3>
+                <p>{{.Finished}}</p><br>
+            </div>
+            {{end}}
+        </div>
+        </div>
+    </div>
+</body>
+</html>
