@@ -32,38 +32,34 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("invalid csrft")
 				http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 			} else {
-				_, err := r.Cookie("session_id")
-				if err != nil {
-					r.ParseForm()
-					username := r.Form.Get("username")
-					password := r.Form.Get("password")
-					firstName := r.Form.Get("firstName")
-					lastName := r.Form.Get("lastName")
-					email := r.Form.Get("email")
-					phoneNumber := r.Form.Get("phoneNumber")
+				r.ParseForm()
+				username := r.Form.Get("username")
+				password := r.Form.Get("password")
+				firstName := r.Form.Get("firstName")
+				lastName := r.Form.Get("lastName")
+				email := r.Form.Get("email")
+				phoneNumber := r.Form.Get("phoneNumber")
 
-					if tools.ValidateSignupFormInputs(username, password, firstName, lastName, email, phoneNumber) {
-						userId := tools.GenerateUUID()
-						sessionId := tools.GenerateUUID()
-						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
+				if tools.ValidateSignupFormInputs(username, password, firstName, lastName, email, phoneNumber) {
+					userId := tools.GenerateUUID()
+					sessionId := tools.GenerateUUID()
+					http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 
-						//Create user query
-						query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", tools.HashThis(password)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}, {"rule", "user"}, {"suspended", "no"}})
-						useruser.CreateUser(query, arguments)
+					//Create user query
+					query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", tools.HashThis(password)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}, {"rule", "user"}, {"suspended", "no"}})
+					useruser.CreateUser(query, arguments)
 
-						//Create Session query
-						query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
-						session.CreateSession(query, arguments)
+					//Create Session query
+					query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
+					session.CreateSession(query, arguments)
 
-						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-					} else {
-						fmt.Println("Invalid inputs")
-						http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
-					}
-				} else {
 					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+				} else {
+					fmt.Println("Invalid inputs")
+					http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 				}
+
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 			}
@@ -71,5 +67,6 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Println("wrong method")
 		http.Redirect(w, r, "/users/signup", http.StatusMethodNotAllowed)
+		http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 	}
 }
