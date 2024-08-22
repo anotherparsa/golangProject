@@ -28,112 +28,115 @@ func HashThis(originalText string) string {
 	return hashedPassword
 }
 
-func ValidateSignupFormInputs(username string, password string, firstname string, lastname string, email string, phoneNumber string) bool {
+func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
 	validationFlag := true
-	if username == "" {
-		fmt.Println("Empty username")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(username) < 5 || len(username) > 30 {
-			fmt.Println("invalid length for username")
+
+	if tobevalidated == "username" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty username")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(username)) {
-				fmt.Println("username must only contain alpha numeric characters")
+			if len(valuetobevalidated) < 5 || len(valuetobevalidated) > 30 {
+				fmt.Println("invalid length for username")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
+					fmt.Println("username must only contain alpha numeric characters")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
-	}
-
-	if password == "" {
-		fmt.Println("Empty Password")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(password) < 5 {
-			fmt.Println("invalid length for username")
+	} else if tobevalidated == "password" {
+		if tobevalidated == "" {
+			fmt.Println("Empty Password")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`[a-zA-Z]`).MatchString(password) && regexp.MustCompile(`\d`).MatchString(password) && regexp.MustCompile(`[\W_]`).MatchString(password)) {
-				fmt.Println("Password must be alpha numeric and at least a symbol character")
+			if len(valuetobevalidated) < 5 {
+				fmt.Println("invalid length for username")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`[a-zA-Z]`).MatchString(valuetobevalidated) && regexp.MustCompile(`\d`).MatchString(valuetobevalidated) && regexp.MustCompile(`[\W_]`).MatchString(valuetobevalidated)) {
+					fmt.Println("Password must be alpha numeric and at least a symbol character")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
-	}
-
-	if firstname == "" {
-		fmt.Println("Empty First name")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(firstname) < 3 || len(firstname) > 20 {
-			fmt.Println("invalid length for First name")
+	} else if tobevalidated == "firstname" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty First name")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(firstname)) {
-				fmt.Println("firstname must only contain alpha numeric characters")
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				fmt.Println("invalid length for First name")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
+					fmt.Println("firstname must only contain alpha numeric characters")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
-	}
-
-	if lastname == "" {
-		fmt.Println("Empty Last name")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(lastname) < 3 || len(lastname) > 20 {
-			fmt.Println("invalid length for First name")
+	} else if tobevalidated == "lastname" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty Last name")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(lastname)) {
-				fmt.Println("firstname must only contain alpha numeric characters")
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				fmt.Println("invalid length for First name")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
+					fmt.Println("firstname must only contain alpha numeric characters")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
-	}
-
-	if email == "" {
-		fmt.Println("Empty email")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(email) > 40 {
-			fmt.Println("invalid length for email")
+	} else if tobevalidated == "email" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty email")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(email)) {
-				fmt.Println("invalid email")
+			if len(valuetobevalidated) > 40 {
+				fmt.Println("invalid length for email")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(valuetobevalidated)) {
+					fmt.Println("invalid email")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
-	}
-
-	if phoneNumber == "" {
-		fmt.Println("Empty phone number")
-		validationFlag = false
-		return validationFlag
-	} else {
-		if len(phoneNumber) != 10 {
-			fmt.Println("Invalid length for phone number")
+	} else if tobevalidated == "phonenumber" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty phone number")
 			validationFlag = false
 			return validationFlag
 		} else {
-			if !(regexp.MustCompile(`(^\d+$)`).MatchString(phoneNumber)) {
-				fmt.Println("Phone number must be only numeric")
+			if len(valuetobevalidated) != 10 {
+				fmt.Println("Invalid length for phone number")
 				validationFlag = false
 				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`(^\d+$)`).MatchString(valuetobevalidated)) {
+					fmt.Println("Phone number must be only numeric")
+					validationFlag = false
+					return validationFlag
+				}
 			}
 		}
 	}

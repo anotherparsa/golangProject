@@ -40,7 +40,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 				email := r.Form.Get("email")
 				phoneNumber := r.Form.Get("phoneNumber")
 
-				if tools.ValidateSignupFormInputs(username, password, firstName, lastName, email, phoneNumber) {
+				if tools.ValidateFormInputs("username", username) && tools.ValidateFormInputs("password", password) && tools.ValidateFormInputs("firstname", firstName) && tools.ValidateFormInputs("lastname", lastName) && tools.ValidateFormInputs("email", email) && tools.ValidateFormInputs("phonenumber", phoneNumber) {
 					userId := tools.GenerateUUID()
 					sessionId := tools.GenerateUUID()
 					http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})

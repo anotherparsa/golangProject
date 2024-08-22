@@ -2,7 +2,7 @@ CRUD for users, sessions.
 fix session problem 
 *delete accound
 *change accounts detail (username, password, ....)
-*server side input validation
+*server side input validation (done with sign up ) => do with login edit user and edit task
 *validating unique username, email, phone number
 *add category for tasks
 *admin page

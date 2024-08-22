@@ -33,11 +33,10 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("invalid csrft")
 				http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 			} else {
-				_, err := r.Cookie("session_id")
-				if err != nil {
-					r.ParseForm()
-					username := r.Form.Get("username")
-					password := tools.HashThis(r.Form.Get("password"))
+				r.ParseForm()
+				username := r.Form.Get("username")
+				password := r.Form.Get("password")
+				if tools.ValidateFormInputs("username", username) && tools.ValidateFormInputs("password", password) {
 					if ValidateUser(username, password) {
 						sessionId := tools.GenerateUUID()
 						query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
@@ -49,6 +48,10 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						fmt.Println("User not found in login process handler ")
 					}
+				} else {
+					fmt.Println("Invalid inputs")
+					http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 				}
 			}
 		}

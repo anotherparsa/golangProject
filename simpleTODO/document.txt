@@ -88,5 +88,3 @@ after everything went through the csrft cookie will be deleted.
 and the user will be redirected to "/users/home" path.
 
 +++++++++++++++++++++++++++++++++++++++
-
-
