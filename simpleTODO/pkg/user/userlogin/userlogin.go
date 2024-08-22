@@ -37,6 +37,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 				username := r.Form.Get("username")
 				password := r.Form.Get("password")
 				if tools.ValidateFormInputs("username", username) && tools.ValidateFormInputs("password", password) {
+					password = tools.HashThis(password)
 					if ValidateUser(username, password) {
 						sessionId := tools.GenerateUUID()
 						query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
@@ -44,20 +45,26 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 						http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 						query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
 						session.CreateSession(query, arguments)
+						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 					} else {
 						fmt.Println("User not found in login process handler ")
+						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+						http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+
 					}
 				} else {
 					fmt.Println("Invalid inputs")
-					http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+					http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 				}
 			}
 		}
 	} else {
 		fmt.Println("wrong method")
+		http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
 		http.Redirect(w, r, "/users/login", http.StatusMethodNotAllowed)
+
 	}
 }
 func ValidateUser(username string, password string) bool {
