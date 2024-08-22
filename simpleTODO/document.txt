@@ -1,0 +1,38 @@
+Database's schema:
+users table has these columns:
+id           int
+userId       varchar(64)
+username     varchar(30)
+password     varchar(64)
+firstName    varchar(20)
+lastName     varchar(20)
+email        varchar(40)
+phoneNumber  varchar(10)
+rule         varchar(5)
+suspended    varchar(3)
+
+tasks table has these columns:
+id           int 
+author       varchar(64)
+priority     varchar(6)
+category     varchar(20)
+title        varchar(30)
+description  varchar(70)
+finished     varchar(10)
+
+sessions table has these columns:
+id           int
+sessionId    varchar(64)
+userId       varchar(64)
+
+messages table has these columns:
+id           int 
+author       varchar(64)
+priority     varchar(6)
+category     varchar(20)
+title        varchar(30)
+description  varchar(70)
+finished     varchar(10)
+
+
+
