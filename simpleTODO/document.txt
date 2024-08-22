@@ -34,5 +34,15 @@ title        varchar(30)
 description  varchar(70)
 finished     varchar(10)
 
+Routing:
+since the golang treats the URL patter "/" like a catch all.
+when user visits any path, the handle func for the "/" will call RoutingHandler in routing package.
+all the routes will be divided into 3 main categories:
+routes relevant to users which start with "/users/"
+routes relevant to tasks which start with "/tasks/"
+routes relevant to admin which start with "/admin/"
+the routing will be decided by if else conditions and to prevent any
+unnecessary conditoin checking first the url's category will be determined
+by checking its prefix. and then check the paths relevant to that category.
 
 
