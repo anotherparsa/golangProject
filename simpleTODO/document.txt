@@ -149,6 +149,22 @@ Title => provided by user
 Description => provided by user
 finished => with "unfinished" value by default.
 
+task editing:
+when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
+edit button is a link to this address:
+"/tasks/edittask/V" where v is the ID of that task.
+for example if a task has the id of 4 the delete button will be a link to "/tasks/edittask/4"
+now when user clicks on that button it will go to /tasks/edittask/4 UpdateTaskPageHandler will be called.
+first it will look for a cookie named session_id.
+if there was a cookie it will get userId of the user by that session_id value.
+taskID will be trimmed out of the URL.
+and the task with that id will be read from database.
+then it will check if the userId corresponding to that session_id is the same as the author of that task.
+if everything went through the edit task page will be rendered with that tasks corrent values in a form.
+in that page user can change those values if they want and when they click on the update task the form will be submitted to "/tasks/edittaskprocessor"
+when it goes to "/tasks/edittaskprocessor" the UpdateTaskProcessor will be called and at first it will check if the request method is "POST" or not.
+then it will parse the form to get those new values and then it will update the record in database.
+
 tasks deleting:
 when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
 delete button is a link to this address:
