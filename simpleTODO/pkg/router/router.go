@@ -18,8 +18,9 @@ import (
 
 func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
-
-	if strings.HasPrefix(urlPath, "/tasks/") {
+	if urlPath == "/" {
+		userhome.HomePageHandler(w, r)
+	} else if strings.HasPrefix(urlPath, "/tasks/") {
 		//dedicated to tasks
 		if urlPath == "/tasks/createtaskprocess" {
 			usertask.CreateTaskProcessor(w, r)

@@ -1,7 +1,6 @@
 package userhome
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"todoproject/pkg/databasetools"
@@ -21,7 +20,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	//check if user is logged in or not
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
-		fmt.Println("cookie has not found")
+		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 	} else {
 		username, usersid, userId := session.WhoIsThis(cookie.Value)
 		template, _ := template.ParseFiles("../../pkg/user/userhome/template/userhome.html")
