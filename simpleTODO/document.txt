@@ -114,7 +114,7 @@ after everything has been checked that means the authentication was successful t
 and then get that users information and set a cookie with the seesionId and userId
 then the user will be redirected to "/user/home"
 
-user Home Page:
+users Home Page:
 when user visits "/" or "/users/home" path the HomePageHandler int userhome will be called.
 first it will check for a cookie named "session_id", if the cookie was not found use will be redirected to the "/users/signup" path.
 if the cookie was found the following information will be gathered for that user.
@@ -123,7 +123,13 @@ usersid which is the user's id for a link in edit user button.
 userId which is the user's userId for getting the tasks with author value of that userId
 then the home page will be rendered and be shown to the user.
 
-adding a todo task:
+users logout:
+in users home page there is a button named logout.
+this button is a link to "/users/logout"
+when user visits this path the session_id cookie will be deleted from the browser and
+user will be redirect to "/users/login"
+
+tasks adding:
 there is a form in user's home page that can give information about a task that the user wants to create.
 the user can fill the inputs which are:
 Title, Description, Category, Priority
@@ -143,7 +149,7 @@ Title => provided by user
 Description => provided by user
 finished => with "unfinished" value by default.
 
-deleting a todo task:
+tasks deleting:
 when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
 delete button is a link to this address:
 "/tasks/deletetask/V" where v is the ID of that task.

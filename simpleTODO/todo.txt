@@ -13,3 +13,4 @@ fix session problem
 *user profile picture ?
 *done / undone button for tasks
 *validate users's current password for editing account info
+*delete session id from database when user logs out.
