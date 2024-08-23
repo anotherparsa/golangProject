@@ -4,8 +4,6 @@ fix session problem
 *change accounts detail (username, password, ....)
 *server side input validation (done with sign up ) => do with login edit user and edit task
 *validating unique username, email, phone number
-*add category for tasks
-*admin page
 *adding time stamps for tables, created time, updated time, expires at?
 *check for session_id validity, like expired session.
 *password reset

@@ -142,3 +142,11 @@ Category => provided by user
 Title => provided by user
 Description => provided by user
 finished => with "unfinished" value by default.
+
+deleting a todo task:
+when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
+delete button is a link to this address:
+"/tasks/deletetask/V" where v is the ID of that task.
+for example if a task has the id of 4 the delete button will be a link to "/tasks/deletetask/4"
+now when user clicks on that button it will go to /tasks/deletetask/4 and a new variable named taskID will be created with the value of 4.
+then it will use that id to delete the task from database.
