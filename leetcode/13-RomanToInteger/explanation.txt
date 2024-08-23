@@ -1,0 +1,37 @@
+Romand numbers are represented by seven different symbols:
+Symbol   Value
+I        1
+V        5
+X        10
+L        50
+C        100
+D        500
+M       1000
+
+There are some rules:
+if a symbol with smaller value appears before a symbol with larger value you have to subtract.
+if a symbol with larger value appears befor a symbol with smaller or equal value you have to add.
+I only can be placed before V (5) and X (10) to make 4 and 9. 
+X only can be placed before L (50) and C (100) to make 40 and 90. 
+C only can be placed before D (500) and M (1000) to make 400 and 900.
+you can't put miltiple smaller values before a larger value
+EX: 
+you can't represent 999 as IM => 100 - 1 that's not valid according to the rules.
+instead you use CMXCIX to represent 999 -> 1000 - 100 + 100 - 10 + 10 - 1 = 999
+if you want represent 3 you can use III but if you want to represent 4 you can't use IIII you use IV
+if you want to represent 9 you use IX => 10 - 1
+if you want to represent 8 you use VIII => 5 + 1 + 1 + 1
+II represent 2 => I + I => 1 + 1
+LIII represent 53 => L + I + I => 50 + 1 + 1 +1
+IV represent 4 => 5 - 1 => 4
+There are no more than 3 times repeatation.
+if you want represent 3 you can use III but if you want to represent 4 you can't use IIII you use IV
+if you want to represent 9 you use IX => 10 - 1
+if you want to represent 8 you use VIII => 5 + 1 + 1 + 1
+in this problem we get a string which is the Romand representation of a number and convert it to the numerical representation.
+then we declare a result int to keep the final Numerical number.
+then we loop through the RomanNumber one by one.
+we keep the one we're iterating in the current value and we check if I is smaller than the length of the RomanNumber minus one.
+if the condition is meet that means there is another Roman Symbol that we have to decide to add or subtract.
+if the current value is is smller than the next symbol then we have to subtract.
+if the current value is bigger than the next symbol or simply there is no other symbol after it (in the condition) we just add it to the result.
