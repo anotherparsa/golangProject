@@ -230,3 +230,13 @@ it will get Totalusers, Totaltasks and Totalmessages
 then the admin home page will be rendered with those informations and be shown to the admin.
 
 +++++++++++++++++++++++++++++++++++++++
+
+admin visiting messages send by the users to the admin:
+in admin home page there is a button named show messages.
+this button is a link to "/admin/messages"
+when admin visits "/admin/messages" AdminMessagesPageHandler will be called.
+it will parse and show the admin message page.
+in that page it will show all the messages sent by used and with informations like:
+Author, title, Description, Category, Priority, completed.
+
++++++++++++++++++++++++++++++++++++++++
