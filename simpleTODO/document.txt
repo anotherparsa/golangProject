@@ -134,7 +134,7 @@ then it will parse the form to get those new values and then it will update the 
 +++++++++++++++++++++++++++++++++++++++
 
 users Home Page:
-when user visits "/" or "/users/home" path the HomePageHandler int userhome will be called.
+when user visits "/" or "/users/home" path the HomePageHandler in userhome will be called.
 first it will check for a cookie named "session_id", if the cookie was not found use will be redirected to the "/users/signup" path.
 if the cookie was found the following information will be gathered for that user.
 username to welcome in the home page
@@ -221,5 +221,12 @@ delete button is a link to this address:
 for example if a task has the id of 4 the delete button will be a link to "/tasks/deletetask/4"
 now when user clicks on that button it will go to /tasks/deletetask/4 and a new variable named taskID will be created with the value of 4.
 then it will use that id to delete the task from database.
+
++++++++++++++++++++++++++++++++++++++++
+
+admin Home Page:
+when user visits "/admin/home" the AdminHomePageHandler in userhome will be called.
+it will get Totalusers, Totaltasks and Totalmessages
+then the admin home page will be rendered with those informations and be shown to the admin.
 
 +++++++++++++++++++++++++++++++++++++++
