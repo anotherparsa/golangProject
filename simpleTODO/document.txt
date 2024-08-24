@@ -152,6 +152,28 @@ user will be redirect to "/users/login"
 
 +++++++++++++++++++++++++++++++++++++++
 
+users sending message to the admin:
+in users home page there is a button named send message.
+this button is a link to "/users/messages"
+when use visits "/users/messages" UserMessagePageHandler will be called.
+it will parse and show the user message page.
+in that page use fills a form which gets these from user:
+Title, Description, Category, Priority. 
+when user fills them and click the send message button the form will be submitted to "/users/createmessageprocessor"
+and when it goes to "/users/createmessageprocessor", CreateUserMessageProcessor will be called.
+first it will check if the request method is POST or not, then it will check for cookie named session_id.
+then it will parse them form and create a new variable named author which is the username associated with that session_id.
+then a message record will be created with:
+Author => user's username got by session_id
+Priority => provided by user
+Category => provided by user
+Title => provided by user
+Description => provided by user
+finished => with "unfinished" value by default.
+and then user will be redirected to "/users/home"
+
++++++++++++++++++++++++++++++++++++++++
+
 tasks adding:
 there is a form in user's home page that can give information about a task that the user wants to create.
 the user can fill the inputs which are:

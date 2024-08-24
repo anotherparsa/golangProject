@@ -9,8 +9,7 @@ fix session problem
 *password reset
 *validate task existense when you're deleting it.
 *authorize the user for deleting or editing.
-*uploading a pic or video or a file alongside each task.
-*user profile picture ?
 *done / undone button for tasks
 *validate users's current password for editing account info
 *delete session id from database when user logs out.
+*check for session_id cookie to make sure a logged used is accessing that path
