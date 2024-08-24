@@ -7,6 +7,7 @@ import (
 	"strings"
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
+	"todoproject/pkg/session"
 )
 
 //CRUD operation for users
@@ -49,17 +50,24 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 //UPDATE
 //page handler
 func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
-	if err != nil {
-		fmt.Println(err)
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie == nil {
+		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+	} else {
+		template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		userId := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
+		_, usersId, _ := session.WhoIsThis(cookie.Value)
+		if userId != usersId {
+			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+		} else {
+			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
+			user := ReadUser(Query, arguments)
+			template.Execute(w, user[0])
+		}
 	}
-	userId := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
-	Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
-	fmt.Println(userId)
-	fmt.Println(Query)
-	fmt.Println(arguments...)
-	user := ReadUser(Query, arguments)
-	template.Execute(w, user[0])
 }
 
 //processing

@@ -88,6 +88,7 @@ after everything went through the csrft cookie will be deleted.
 and the user will be redirected to "/users/home" path.
 
 +++++++++++++++++++++++++++++++++++++++
+
 users login process:
 when user visits "/users/login" path the LoginPageHander in userlogin package will be called.
 and following up a package wide variable named csrft will be declared
@@ -114,6 +115,24 @@ after everything has been checked that means the authentication was successful t
 and then get that users information and set a cookie with the seesionId and userId
 then the user will be redirected to "/user/home"
 
++++++++++++++++++++++++++++++++++++++++
+
+user editing:
+when users home page is rendered a button named edit account will be rendered too, 
+which is a link to "/users/editaccount/V" where V is the ID of that user.
+for example if a user has the id of 4 the edit account button will be a link to "/users/editaccount/4"
+now when user clicks on that button it will go to /users/edituser/4 UpdateUserPageHandler will be called.
+first it will look for a cookie named session_id.
+if there was a cookie it will get user's id of the user by that session_id value.
+user id will be trimmed out of the URL.
+then it will check if the user's id came back by WhoIsThis by that session_id value is the same as the user's id trimmed out of the url or not.
+if everything is ok, it will get that user and render a edit user page with the current users values for user to change.
+in that page user can change those values if they want and when they click on the update user the form will be submitted to "/users/edituserprocessor"
+when it goes to "/users/edituserprocessor" the UpdateUserProcessor will be called and at first it will check if the request method is "POST" or not.
+then it will parse the form to get those new values and then it will update the record in database.
+
++++++++++++++++++++++++++++++++++++++++
+
 users Home Page:
 when user visits "/" or "/users/home" path the HomePageHandler int userhome will be called.
 first it will check for a cookie named "session_id", if the cookie was not found use will be redirected to the "/users/signup" path.
@@ -123,11 +142,15 @@ usersid which is the user's id for a link in edit user button.
 userId which is the user's userId for getting the tasks with author value of that userId
 then the home page will be rendered and be shown to the user.
 
++++++++++++++++++++++++++++++++++++++++
+
 users logout:
 in users home page there is a button named logout.
 this button is a link to "/users/logout"
 when user visits this path the session_id cookie will be deleted from the browser and
 user will be redirect to "/users/login"
+
++++++++++++++++++++++++++++++++++++++++
 
 tasks adding:
 there is a form in user's home page that can give information about a task that the user wants to create.
@@ -149,6 +172,8 @@ Title => provided by user
 Description => provided by user
 finished => with "unfinished" value by default.
 
++++++++++++++++++++++++++++++++++++++++
+
 task editing:
 when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
 edit button is a link to this address:
@@ -165,6 +190,8 @@ in that page user can change those values if they want and when they click on th
 when it goes to "/tasks/edittaskprocessor" the UpdateTaskProcessor will be called and at first it will check if the request method is "POST" or not.
 then it will parse the form to get those new values and then it will update the record in database.
 
++++++++++++++++++++++++++++++++++++++++
+
 tasks deleting:
 when tasks are rendered in home page, each task will have two buttons for edit and deleting that task.
 delete button is a link to this address:
@@ -172,3 +199,5 @@ delete button is a link to this address:
 for example if a task has the id of 4 the delete button will be a link to "/tasks/deletetask/4"
 now when user clicks on that button it will go to /tasks/deletetask/4 and a new variable named taskID will be created with the value of 4.
 then it will use that id to delete the task from database.
+
++++++++++++++++++++++++++++++++++++++++
