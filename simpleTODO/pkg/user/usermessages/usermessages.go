@@ -9,26 +9,31 @@ import (
 )
 
 func UserMessagePageHandler(w http.ResponseWriter, r *http.Request) {
-	template, _ := template.ParseFiles("../../pkg/user/usermessages/template/usermessage.html")
-	template.Execute(w, nil)
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie == nil {
+		template, _ := template.ParseFiles("../../pkg/user/usermessages/template/usermessage.html")
+		template.Execute(w, nil)
+	} else {
+		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+	}
 }
 
 func CreateUserMessageProcessor(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		cookie, err := r.Cookie("session_id")
-		if err != nil || cookie == nil {
-			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
-		} else {
+	cookie, err := r.Cookie("session_id")
+	if err != nil || cookie == nil {
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+	} else {
+		if r.Method == "POST" {
 			r.ParseForm()
 			author, _, _ := session.WhoIsThis(cookie.Value)
 			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "messages", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
 			CreateMessage(query, arguments)
 			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 		}
-	} else {
-		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 	}
+
 }
 
 func CreateMessage(query string, arguments []interface{}) {

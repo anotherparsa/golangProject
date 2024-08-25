@@ -10,28 +10,28 @@ import (
 	"todoproject/pkg/session"
 )
 
-//CRUD operations for tasks
-//Create
-//processor
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		cookie, err := r.Cookie("session_id")
-		if err != nil || cookie == nil {
-			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+	cookie, err := r.Cookie("session_id")
+	if err == nil || cookie != nil {
+		if r.Method == "POST" {
+			cookie, err := r.Cookie("session_id")
+			if err != nil || cookie == nil {
+				http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+			} else {
+				r.ParseForm()
+				author := session.ReturnUsersUserID(cookie.Value)
+				query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
+				CreateTask(query, arguments)
+				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			}
 		} else {
-			r.ParseForm()
-			author := session.ReturnUsersUserID(cookie.Value)
-			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
-			CreateTask(query, arguments)
-			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 		}
 	} else {
-		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/login", http.StatusProxyAuthRequired)
 	}
 }
 
-//apply in database
 func CreateTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -44,8 +44,6 @@ func CreateTask(query string, arguments []interface{}) {
 	fmt.Println("Task has been created")
 }
 
-//Read
-//processor
 func ReadTask(query string, arguments []interface{}) []models.Task {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -68,15 +66,12 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 	return tasks
 }
 
-//Update
-//page handler
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+		http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
 	} else {
 		_, _, userId := session.WhoIsThis(cookie.Value)
-
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
 		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
@@ -89,12 +84,9 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			template.Execute(w, task[0])
 		}
-
 	}
-
 }
 
-//processor
 func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -119,8 +111,6 @@ func UpdateTask(query string, arguments []interface{}) {
 	fmt.Println("task has been updated")
 }
 
-//Delete
-//processor
 func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
 	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
@@ -128,7 +118,6 @@ func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 }
 
-//apply in database
 func DeleteTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -138,5 +127,4 @@ func DeleteTask(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Task has been deleted")
 }

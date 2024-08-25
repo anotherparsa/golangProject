@@ -10,8 +10,6 @@ import (
 	"todoproject/pkg/session"
 )
 
-//CRUD operation for users
-//Create
 func CreateUser(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -24,7 +22,6 @@ func CreateUser(query string, arguments []interface{}) {
 	fmt.Println("user has been created")
 }
 
-//Read
 func ReadUser(query string, arguments []interface{}) []models.User {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -47,8 +44,6 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 	return users
 }
 
-//UPDATE
-//page handler
 func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
@@ -70,7 +65,6 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//processing
 func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -83,7 +77,6 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//applying in the database{
 func UpdateUser(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -93,5 +86,4 @@ func UpdateUser(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("User Has been updated")
 }

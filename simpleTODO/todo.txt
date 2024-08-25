@@ -1,11 +1,7 @@
-CRUD for users, sessions.
-fix session problem 
 *delete accound
 *change accounts detail (username, password, ....)
 *server side input validation (done with sign up ) => do with login edit user and edit task
 *validating unique username, email, phone number
-*adding time stamps for tables, created time, updated time, expires at?
-*check for session_id validity, like expired session.
 *password reset
 *validate task existense when you're deleting it.
 *authorize the user for deleting or editing.

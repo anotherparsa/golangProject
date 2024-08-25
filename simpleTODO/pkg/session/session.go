@@ -19,7 +19,6 @@ func CreateSession(query string, arguments []interface{}) {
 		fmt.Println(err)
 
 	}
-	fmt.Println("session has been created")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +26,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
 
-//finding a corespounding user_id user's id and username from a session id.
 func WhoIsThis(session_id string) (string, string, string) {
 	var user_id string
 	var username string
