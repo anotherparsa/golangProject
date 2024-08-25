@@ -19,7 +19,6 @@ func CreateUser(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("user has been created")
 }
 
 func ReadUser(query string, arguments []interface{}) []models.User {

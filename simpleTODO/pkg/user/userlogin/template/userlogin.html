@@ -14,8 +14,8 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                <input type="hidden" name="csrft" value="{{.CSRFT}}">
             </div>
-            <input type="hidden" name="csrf-token" value={{.Csrf_token}}>
             <div class="form-group">
             </div>
             <button type="submit">Sign Up</button>

@@ -10,19 +10,22 @@ import (
 	"todoproject/pkg/user/useruser"
 )
 
-var csrft string
+type datatosend struct {
+	CSRFT string
+}
 
 func SignupPageHander(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err != nil || cookie == nil {
 		//generating csrf token
-		csrft = tools.GenerateUUID()
+		csrft := tools.GenerateUUID()
 		//setting csrft cookie
 		http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
 		//parsing and executing the template
+		datatosend := datatosend{CSRFT: csrft}
 		template, _ := template.ParseFiles("../../pkg/user/usersignup/template/usersignup.html")
-		template.Execute(w, nil)
+		template.Execute(w, datatosend)
 	} else {
 		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	}
@@ -32,15 +35,15 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err != nil && cookie == nil {
-		sent_csrf_token, err := r.Cookie("csrft")
+		generatedCSRFT, err := r.Cookie("csrft")
 		//checking if the csrft cookie exist or not
-		if err == nil && sent_csrf_token != nil {
+		if err == nil && generatedCSRFT != nil {
 			//checking if the sent csrft is the same as the generated one
-			if sent_csrf_token.Value == csrft {
+			r.ParseForm()
+			if generatedCSRFT.Value == r.Form.Get("csrft") {
 				//checking if request method is POST or not
 				if r.Method == "POST" {
 					//getting form input values
-					r.ParseForm()
 					username := r.Form.Get("username")
 					password := r.Form.Get("password")
 					firstName := r.Form.Get("firstName")
@@ -73,31 +76,31 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 											http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 										} else {
 											http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-											http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+											http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 										}
 									} else {
 										http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-										http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+										http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 									}
 								} else {
 									http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-									http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+									http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 								}
 							} else {
 								http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-								http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+								http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 							}
 						} else {
 							http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-							http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+							http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 						}
 					} else {
 						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-						http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+						http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
 					}
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-					http.Redirect(w, r, "/users/login", http.StatusMethodNotAllowed)
+					http.Redirect(w, r, "/users/signup", http.StatusMethodNotAllowed)
 				}
 			} else {
 				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
