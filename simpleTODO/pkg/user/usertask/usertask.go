@@ -114,6 +114,7 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//applying in the database
 func UpdateTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -125,13 +126,34 @@ func UpdateTask(query string, arguments []interface{}) {
 	}
 }
 
+//Delete
+//Deleting processor
 func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
-	query, arguments := databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
-	DeleteTask(query, arguments)
-	http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+	cookie, err := r.Cookie("session_id")
+	//check if session_id exist or not, that means if the user is logged in or not
+	if err == nil && cookie != nil {
+		//getting the userId of the logged user
+		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		//getting the task id from url
+		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
+		//getting the task with that id and that userId as author
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
+		task := ReadTask(query, arguments)
+		//checking if there was a task to meet those conditions.
+		if len(task) == 1 {
+			//deleting task
+			query, arguments = databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+			DeleteTask(query, arguments)
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+	}
 }
 
+//applying in the database
 func DeleteTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
