@@ -12,23 +12,23 @@ import (
 
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
-	if err == nil || cookie != nil {
+	//check if session_id exist or not, that means if the user is logged in or not
+	if err == nil && cookie != nil {
+		//checking if the request mothod is POST or not
 		if r.Method == "POST" {
-			cookie, err := r.Cookie("session_id")
-			if err != nil || cookie == nil {
-				http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
-			} else {
-				r.ParseForm()
-				author := session.ReturnUsersUserID(cookie.Value)
-				query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
-				CreateTask(query, arguments)
-				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
-			}
+			//getting form input values
+			r.ParseForm()
+			//getting user's user_Id
+			_, _, author := session.WhoIsThis(cookie.Value)
+			//creating a task record in tasks table
+			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
+			CreateTask(query, arguments)
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
 		}
 	} else {
-		http.Redirect(w, r, "/users/login", http.StatusProxyAuthRequired)
+		http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
 	}
 }
 

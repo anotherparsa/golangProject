@@ -77,24 +77,3 @@ func ReadSessions(database *sql.DB) {
 		}
 	}
 }
-
-func ReturnUsersUserID(sessionId string) string {
-	var user_id string
-	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", sessionId}}, [][]string{})
-	safequeyr, err := databasetools.DataBase.Prepare(query)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	rows, err := safequeyr.Query(arguments...)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		if err := rows.Scan(&user_id); err != nil {
-			fmt.Println(err)
-		}
-	}
-	return user_id
-}
