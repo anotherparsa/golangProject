@@ -32,10 +32,10 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
-	if err != nil || cookie == nil {
+	if err != nil && cookie == nil {
 		sent_csrf_token, err := r.Cookie("csrft")
 		//checking if the csrft cookie exist or not
-		if err != nil && sent_csrf_token != nil {
+		if err == nil && sent_csrf_token != nil {
 			//checking if the sent csrft is the same as the generated one
 			if sent_csrf_token.Value == csrft {
 				//checking if the request method is POST or not
@@ -55,7 +55,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 							//getting user to set a session_id corresponding to their userId
 							query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
 							user := useruser.ReadUser(query, arguments)
-							//setting the cookie
+							//setting the session_id cookie
 							http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 							//creating a session record in the session table
 							query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
