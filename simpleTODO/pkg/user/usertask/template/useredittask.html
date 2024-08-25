@@ -10,17 +10,17 @@
         <form action="/tasks/edittaskprocessor" method="post">
             <div class="form-group">
                 <label for="title">Title:</label>
-                <input type="text" id="title" name="title" value={{.Title}}>
-                <input type="hidden" name="id" value={{.Id}}>
+                <input type="text" id="title" name="title" value={{.Task.Title}}>
+                <input type="hidden" name="id" value={{.Task.Id}}>
             </div>
 
             <div class="form-group">
                 <label for="description">Description:</label>
-                <input type="text" id="description" name="description" value={{.Description}}>
+                <input type="text" id="description" name="description" value={{.Task.Description}}>
             </div>
             <div class="form-group">
                 <label for="category">Category:</label>
-                <input type="text" id="category" name="category" value={{.Category}}>
+                <input type="text" id="category" name="category" value={{.Task.Category}}>
             </div>
             <div class="form-group">
                 <label for="priority">Priority:</label>
@@ -29,9 +29,9 @@
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
                 </select>
+                <input type="hidden" name="csrft" value="{{.CSRFT}}">
             </div>
 
-    
             <button type="submit" id="submit">Update Task</button>
     
         </form>

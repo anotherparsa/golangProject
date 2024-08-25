@@ -8,7 +8,13 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
 	"todoproject/pkg/session"
+	"todoproject/pkg/tools"
 )
+
+type datatosend struct {
+	CSRFT string
+	Task  models.Task
+}
 
 func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
@@ -83,34 +89,71 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
-	} else {
+	//check if session id exist or not, that means if the user is logged in
+	if err == nil || cookie != nil {
+		csrft := tools.GenerateUUID()
+		//setting csrft cookie
+		http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
+		//getting logged user userId
 		_, _, userId := session.WhoIsThis(cookie.Value)
-		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		taskId := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
+		//getting task to edit
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskId}, {"author", userId}}, [][]string{})
 		task := ReadTask(Query, arguments)
-		template, err := template.ParseFiles("../../pkg/user/usertask/template/useredittask.html")
-		if err != nil {
-			fmt.Println(err)
-		}
-		if userId != task[0].Author {
-			fmt.Fprintf(w, "You are not authorized")
+		//checking if it had any result or not
+		if len(task) == 1 {
+			datatosend := datatosend{CSRFT: csrft, Task: task[0]}
+			//rendering edit page with the target task
+			template, _ := template.ParseFiles("../../pkg/user/usertask/template/useredittask.html")
+			template.Execute(w, datatosend)
 		} else {
-			template.Execute(w, task[0])
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		}
+	} else {
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	}
 }
 
 func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		r.ParseForm()
-		Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"category", r.Form.Get("category")}})
-		UpdateTask(Query, arguments)
-		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+	cookie, err := r.Cookie("session_id")
+	//check if session_id exist or not, that means if the user is logged in or not
+	if err == nil && cookie != nil {
+		generatedCSRFT, err := r.Cookie("updatetaskcsrft")
+		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		if err == nil && generatedCSRFT != nil {
+			r.ParseForm()
+			if generatedCSRFT.Value == r.Form.Get("csrft") {
+				//checking if the request method is equal to POST
+				if r.Method == "POST" {
+					//getting task to edit
+					Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{})
+					task := ReadTask(Query, arguments)
+					//checking if it had any result or not
+					if len(task) == 1 {
+						Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"category", r.Form.Get("category")}})
+						UpdateTask(Query, arguments)
+						http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					} else {
+						http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					}
+
+				} else {
+					http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+				}
+			} else {
+				http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			}
+		} else {
+			http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		}
 	} else {
-		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	}
 }
 
