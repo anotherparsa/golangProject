@@ -26,7 +26,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{Name: "homecsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 		template, _ := template.ParseFiles("../../pkg/user/userhome/template/userhome.html")
 		username, usersid, userId := session.WhoIsThis(cookie.Value)
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"author", userId}}, [][]string{})
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 		tasks := usertask.ReadTask(query, arguments)
 		data := dataToSend{Username: username, Userid: usersid, Tasks: tasks, CSRFT: csrft}
 		template.Execute(w, data)

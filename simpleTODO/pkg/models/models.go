@@ -21,7 +21,7 @@ type Task struct {
 	Category    string
 	Title       string
 	Description string
-	Finished    string
+	Status    string
 }
 
 type Session struct {
@@ -37,7 +37,7 @@ type Messages struct {
 	Category    string
 	Title       string
 	Description string
-	Finished    string
+	Status    string
 }
 
 type Static struct {

@@ -26,7 +26,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 					//getting user's user_Id
 					_, _, author := session.WhoIsThis(cookie.Value)
 					//creating a task record in tasks table
-					query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
+					query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
 					CreateTask(query, arguments)
 					http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
 					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -72,7 +72,7 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 	tasks := []models.Task{}
 	for rows.Next() {
 		task := models.Task{}
-		err := rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Category, &task.Title, &task.Description, &task.Finished)
+		err := rows.Scan(&task.Id, &task.Author, &task.Priority, &task.Category, &task.Title, &task.Description, &task.Status)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -88,7 +88,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		_, _, userId := session.WhoIsThis(cookie.Value)
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 		task := ReadTask(Query, arguments)
 		template, err := template.ParseFiles("../../pkg/user/usertask/template/useredittask.html")
 		if err != nil {
@@ -123,7 +123,6 @@ func UpdateTask(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("task has been updated")
 }
 
 func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
