@@ -22,6 +22,7 @@ func CreateSession(query string, arguments []interface{}) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
 	http.SetCookie(w, &http.Cookie{Name: "session_id", MaxAge: -1, Path: "/"})
 	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }

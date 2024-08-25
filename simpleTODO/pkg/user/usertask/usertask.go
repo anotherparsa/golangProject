@@ -14,21 +14,37 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err == nil && cookie != nil {
-		//checking if the request mothod is POST or not
-		if r.Method == "POST" {
-			//getting form input values
+		generatedCSRFT, err := r.Cookie("homecsrft")
+		//checking if the csrft cookie exist or not
+		if err == nil && generatedCSRFT != nil {
 			r.ParseForm()
-			//getting user's user_Id
-			_, _, author := session.WhoIsThis(cookie.Value)
-			//creating a task record in tasks table
-			query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
-			CreateTask(query, arguments)
-			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			if generatedCSRFT.Value == r.Form.Get("csrft") {
+				//checking if the request mothod is POST or not
+				if r.Method == "POST" {
+					//getting form input values
+					r.ParseForm()
+					//getting user's user_Id
+					_, _, author := session.WhoIsThis(cookie.Value)
+					//creating a task record in tasks table
+					query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "finished"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"finished", "unfinished"}})
+					CreateTask(query, arguments)
+					http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+				} else {
+					http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+				}
+			} else {
+				http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			}
 		} else {
-			http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
+			http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		}
 	} else {
-		http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
+		http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	}
 }
 
@@ -41,7 +57,6 @@ func CreateTask(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Task has been created")
 }
 
 func ReadTask(query string, arguments []interface{}) []models.Task {
@@ -69,7 +84,7 @@ func ReadTask(query string, arguments []interface{}) []models.Task {
 func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	} else {
 		_, _, userId := session.WhoIsThis(cookie.Value)
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
@@ -95,7 +110,7 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	} else {
 		fmt.Println("Wrong method")
-		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
+		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	}
 }
 

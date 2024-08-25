@@ -22,7 +22,7 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 		//generating csrf token
 		csrft := tools.GenerateUUID()
 		//setting csrft cookie
-		http.SetCookie(w, &http.Cookie{Name: "csrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode})
+		http.SetCookie(w, &http.Cookie{Name: "logincsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 		//parsing and executing the template
 		datatosend := datatosend{CSRFT: csrft}
 		template, _ := template.ParseFiles("../../pkg/user/userlogin/template/userlogin.html")
@@ -36,7 +36,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err != nil && cookie == nil {
-		generatedCSRFT, err := r.Cookie("csrft")
+		generatedCSRFT, err := r.Cookie("logincsrft")
 		//checking if the csrft cookie exist or not
 		if err == nil && generatedCSRFT != nil {
 			//checking if the sent csrft is the same as the generated one
@@ -66,35 +66,35 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 								query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
 								session.CreateSession(query, arguments)
 								//deleting csrft token cookie
-								http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+								http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
 								//redirecting user to their home page
 								http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 							} else {
-								http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+								http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
 								http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 							}
 						} else {
-							http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+							http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
 							http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 						}
 					} else {
-						http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+						http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
 						http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 					}
 				} else {
-					http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-					http.Redirect(w, r, "/users/login", http.StatusMethodNotAllowed)
+					http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
+					http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 				}
 			} else {
-				http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-				http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
+				http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
+				http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 			}
 		} else {
-			http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
-			http.Redirect(w, r, "/users/login", http.StatusUnauthorized)
+			http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
+			http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 		}
 	} else {
-		http.SetCookie(w, &http.Cookie{Name: "csrft", MaxAge: -1})
+		http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
 		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	}
 }
