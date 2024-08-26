@@ -28,7 +28,7 @@ func GetMessages(query string, arguments []interface{}) []models.Messages {
 	messages := []models.Messages{}
 	for rows.Next() {
 		message := models.Messages{}
-		err := rows.Scan(&message.Id, &message.Author, &message.Priority, &message.Title, &message.Description, &message.Description, &message.Status)
+		err := rows.Scan(&message.Id, &message.Author, &message.Priority, &message.Category, &message.Title, &message.Description, &message.Status)
 		if err != nil {
 			fmt.Println(err)
 		}

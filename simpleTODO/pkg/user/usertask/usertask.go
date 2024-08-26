@@ -24,11 +24,10 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		//checking if the csrft cookie exist or not
 		if err == nil && generatedCSRFT != nil {
 			r.ParseForm()
+			//checking if the form csrft is the same as generated csrft at server
 			if generatedCSRFT.Value == r.Form.Get("csrft") {
 				//checking if the request mothod is POST or not
 				if r.Method == "POST" {
-					//getting form input values
-					r.ParseForm()
 					//getting user's user_Id
 					_, _, author := session.WhoIsThis(cookie.Value)
 					//creating a task record in tasks table
