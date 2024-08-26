@@ -43,11 +43,37 @@ func CreateUserMessageProcessor(w http.ResponseWriter, r *http.Request) {
 				if r.Method == "POST" {
 					//getting logged user's username
 					username, _, _ := session.WhoIsThis(cookie.Value)
-					//creating a message record in messages table
-					query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{{"author", username}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
-					CreateMessage(query, arguments)
-					http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
-					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					//getting users input values
+					priority := r.Form.Get("priority")
+					category := r.Form.Get("category")
+					title := r.Form.Get("title")
+					description := r.Form.Get("description")
+					//form input validation
+					if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+						if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+							if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+								if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+									//creating a message record in messages table
+									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{{"author", username}, {"priority", priority}, {"category", category}, {"title", title}, {"description", description}, {"status", "unfinished"}})
+									CreateMessage(query, arguments)
+									http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
+									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+								} else {
+									http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
+									http.Redirect(w, r, "/users/messages", http.StatusSeeOther)
+								}
+							} else {
+								http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
+								http.Redirect(w, r, "/users/messages", http.StatusSeeOther)
+							}
+						} else {
+							http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
+							http.Redirect(w, r, "/users/messages", http.StatusSeeOther)
+						}
+					} else {
+						http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
+						http.Redirect(w, r, "/users/messages", http.StatusSeeOther)
+					}
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
 					http.Redirect(w, r, "/users/messages", http.StatusSeeOther)

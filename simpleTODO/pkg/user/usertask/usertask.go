@@ -30,11 +30,37 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 				if r.Method == "POST" {
 					//getting user's user_Id
 					_, _, author := session.WhoIsThis(cookie.Value)
-					//creating a task record in tasks table
-					query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
-					CreateTask(query, arguments)
-					http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
-					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					//getting users input values
+					priority := r.Form.Get("priority")
+					category := r.Form.Get("category")
+					title := r.Form.Get("title")
+					description := r.Form.Get("description")
+					//validating users input on tasks forms
+					if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+						if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+							if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+								if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+									//creating a task record in tasks table
+									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
+									CreateTask(query, arguments)
+									http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+								} else {
+									http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+								}
+							} else {
+								http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+								http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+							}
+						} else {
+							http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+						}
+					} else {
+						http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					}
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
 					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -126,20 +152,44 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 			if generatedCSRFT.Value == r.Form.Get("csrft") {
 				//checking if the request method is equal to POST
 				if r.Method == "POST" {
-					//getting task to edit
-					Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{})
-					task := ReadTask(Query, arguments)
-					//checking if it had any result or not
-					if len(task) == 1 {
-						Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{{"priority", r.Form.Get("priority")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"category", r.Form.Get("category")}})
-						UpdateTask(Query, arguments)
-						http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
-						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					//getting form inputs value
+					priority := r.Form.Get("priority")
+					category := r.Form.Get("category")
+					title := r.Form.Get("title")
+					description := r.Form.Get("description")
+					if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+						if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+							if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+								if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+									//getting task to edit
+									Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{})
+									task := ReadTask(Query, arguments)
+									//checking if it had any result or not
+									if len(task) == 1 {
+										Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{{"priority", priority}, {"title", title}, {"description", description}, {"category", category}})
+										UpdateTask(Query, arguments)
+										http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+										http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+									} else {
+										http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+										http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+									}
+								} else {
+									http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+								}
+							} else {
+								http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+								http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+							}
+						} else {
+							http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
+							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+						}
 					} else {
 						http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
 						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 					}
-
 				} else {
 					http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
 					http.Redirect(w, r, "/users/home", http.StatusSeeOther)

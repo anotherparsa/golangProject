@@ -49,8 +49,8 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 					username := r.Form.Get("username")
 					password := r.Form.Get("password")
 					//checking if form inputs are valid or not
-					if tools.ValidateFormInputs("username", username) {
-						if tools.ValidateFormInputs("password", password) {
+					if tools.ValidateUserInfoFormInputs("username", username) {
+						if tools.ValidateUserInfoFormInputs("password", password) {
 							//after form inputs have been validated.
 							password = tools.HashThis(password)
 							//validating the user in the database

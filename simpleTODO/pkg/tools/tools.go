@@ -28,22 +28,19 @@ func HashThis(originalText string) string {
 	return hashedPassword
 }
 
-func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
+func ValidateUserInfoFormInputs(tobevalidated string, valuetobevalidated string) bool {
 	validationFlag := true
 
 	if tobevalidated == "username" {
 		if valuetobevalidated == "" {
-			fmt.Println("Empty username")
 			validationFlag = false
 			return validationFlag
 		} else {
 			if len(valuetobevalidated) < 5 || len(valuetobevalidated) > 30 {
-				fmt.Println("invalid length for username")
 				validationFlag = false
 				return validationFlag
 			} else {
 				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
-					fmt.Println("username must only contain alpha numeric characters")
 					validationFlag = false
 					return validationFlag
 				}
@@ -51,17 +48,14 @@ func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
 		}
 	} else if tobevalidated == "password" {
 		if tobevalidated == "" {
-			fmt.Println("Empty Password")
 			validationFlag = false
 			return validationFlag
 		} else {
 			if len(valuetobevalidated) < 5 {
-				fmt.Println("invalid length for username")
 				validationFlag = false
 				return validationFlag
 			} else {
 				if !(regexp.MustCompile(`[a-zA-Z]`).MatchString(valuetobevalidated) && regexp.MustCompile(`\d`).MatchString(valuetobevalidated) && regexp.MustCompile(`[\W_]`).MatchString(valuetobevalidated)) {
-					fmt.Println("Password must be alpha numeric and at least a symbol character")
 					validationFlag = false
 					return validationFlag
 				}
@@ -69,17 +63,14 @@ func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
 		}
 	} else if tobevalidated == "firstname" {
 		if valuetobevalidated == "" {
-			fmt.Println("Empty First name")
 			validationFlag = false
 			return validationFlag
 		} else {
 			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
-				fmt.Println("invalid length for First name")
 				validationFlag = false
 				return validationFlag
 			} else {
-				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
-					fmt.Println("firstname must only contain alpha numeric characters")
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
 					validationFlag = false
 					return validationFlag
 				}
@@ -87,17 +78,14 @@ func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
 		}
 	} else if tobevalidated == "lastname" {
 		if valuetobevalidated == "" {
-			fmt.Println("Empty Last name")
 			validationFlag = false
 			return validationFlag
 		} else {
 			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
-				fmt.Println("invalid length for First name")
 				validationFlag = false
 				return validationFlag
 			} else {
-				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
-					fmt.Println("firstname must only contain alpha numeric characters")
+				if !(regexp.MustCompile(`^[A-Za-z]+$`).MatchString(valuetobevalidated)) {
 					validationFlag = false
 					return validationFlag
 				}
@@ -123,20 +111,74 @@ func ValidateFormInputs(tobevalidated string, valuetobevalidated string) bool {
 		}
 	} else if tobevalidated == "phonenumber" {
 		if valuetobevalidated == "" {
-			fmt.Println("Empty phone number")
 			validationFlag = false
 			return validationFlag
 		} else {
 			if len(valuetobevalidated) != 10 {
-				fmt.Println("Invalid length for phone number")
 				validationFlag = false
 				return validationFlag
 			} else {
 				if !(regexp.MustCompile(`(^\d+$)`).MatchString(valuetobevalidated)) {
-					fmt.Println("Phone number must be only numeric")
 					validationFlag = false
 					return validationFlag
 				}
+			}
+		}
+	}
+
+	return validationFlag
+}
+
+func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidated string) bool {
+	validationFlag := true
+	if tobevalidated == "priority" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 6 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "category" {
+		if tobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "title" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			}
+		}
+	} else if tobevalidated == "description" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
 			}
 		}
 	}

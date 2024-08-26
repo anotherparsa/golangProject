@@ -90,21 +90,64 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 			if generatedCSRFT.Value == r.Form.Get("csrft") {
 				//checking if the request method is equal to POST
 				if r.Method == "POST" {
-					//getting user to edit
-					Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}, {"userId", loggedUser}, {"password", tools.HashThis(r.Form.Get("currentpassword"))}}, [][]string{})
-					user := ReadUser(Query, arguments)
-					//checking if it had any result or not
-					if len(user) == 1 {
-						//checkinf if the user entered a new password
-						if len(r.Form.Get("newpassword")) != 0 {
-							Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("newpassword"))}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
-							UpdateUser(Query, arguments)
-							http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
-							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					username := r.Form.Get("username")
+					currentpassword := r.Form.Get("password")
+					newpassword := r.Form.Get("newpassword")
+					firstName := r.Form.Get("firstName")
+					lastName := r.Form.Get("lastName")
+					email := r.Form.Get("email")
+					phoneNumber := r.Form.Get("phoneNumber")
+					//checking if forms input are valid or not
+					if tools.ValidateUserInfoFormInputs("username", username) {
+						if tools.ValidateUserInfoFormInputs("password", currentpassword) {
+							if tools.ValidateUserInfoFormInputs("firstName", firstName) {
+								if tools.ValidateUserInfoFormInputs("lastName", lastName) {
+									if tools.ValidateUserInfoFormInputs("email", email) {
+										if tools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
+											//getting user to edit
+											Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}, {"userId", loggedUser}, {"password", tools.HashThis(r.Form.Get("currentpassword"))}}, [][]string{})
+											user := ReadUser(Query, arguments)
+											//checking if it had any result or not
+											if len(user) == 1 {
+												//checkinf if the user entered a new password
+												if len(newpassword) != 0 {
+													if tools.ValidateTaskOrMessageInfoFormInputs("password", newpassword) {
+														Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("newpassword"))}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
+														UpdateUser(Query, arguments)
+														http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+														http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+													} else {
+														http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+														http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+													}
+												} else {
+													//this means user didn't provide a new password
+													Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
+													UpdateUser(Query, arguments)
+													http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+													http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+												}
+											} else {
+												http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+												http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+											}
+										} else {
+											http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+											http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+										}
+									} else {
+										http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+										http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+									}
+								} else {
+									http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+								}
+							} else {
+								http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+								http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+							}
 						} else {
-							//this means user didn't provide a new password
-							Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
-							UpdateUser(Query, arguments)
 							http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
 							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 						}

@@ -51,12 +51,12 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 					email := r.Form.Get("email")
 					phoneNumber := r.Form.Get("phoneNumber")
 					//checking if forms input are valid or not
-					if tools.ValidateFormInputs("username", username) {
-						if tools.ValidateFormInputs("password", password) {
-							if tools.ValidateFormInputs("firstName", firstName) {
-								if tools.ValidateFormInputs("lastName", lastName) {
-									if tools.ValidateFormInputs("email", email) {
-										if tools.ValidateFormInputs("phoneNumber", phoneNumber) {
+					if tools.ValidateUserInfoFormInputs("username", username) {
+						if tools.ValidateUserInfoFormInputs("password", password) {
+							if tools.ValidateUserInfoFormInputs("firstName", firstName) {
+								if tools.ValidateUserInfoFormInputs("lastName", lastName) {
+									if tools.ValidateUserInfoFormInputs("email", email) {
+										if tools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
 											//after validating the forms input
 											password = tools.HashThis(password)
 											//generating user_id and session_id
