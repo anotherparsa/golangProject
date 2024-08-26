@@ -1,11 +1,5 @@
 *delete accound
-*change accounts detail (username, password, ....)
 *server side input validation (done with sign up ) => do with login edit user and edit task
 *validating unique username, email, phone number
-*password reset
-*validate task existense when you're deleting it.
-*authorize the user for deleting or editing.
 *done / undone button for tasks
-*validate users's current password for editing account info
 *delete session id from database when user logs out.
-*check for session_id cookie to make sure a logged used is accessing that path
