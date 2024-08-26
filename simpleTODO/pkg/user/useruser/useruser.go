@@ -8,7 +8,13 @@ import (
 	"todoproject/pkg/databasetools"
 	"todoproject/pkg/models"
 	"todoproject/pkg/session"
+	"todoproject/pkg/tools"
 )
+
+type datatosend struct {
+	CSRFT string
+	User  models.User
+}
 
 func CreateUser(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
@@ -45,34 +51,82 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 
 func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
-	if err != nil || cookie == nil {
-		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
-	} else {
-		template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
-		if err != nil {
-			fmt.Println(err)
-		}
-		userId := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
-		_, usersId, _ := session.WhoIsThis(cookie.Value)
-		if userId != usersId {
-			http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
-		} else {
-			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", userId}}, [][]string{})
+	//checking if session id exist or not, that means if the user is logged in or not.
+	if err == nil && cookie != nil {
+		csrft := tools.GenerateUUID()
+		//setting csrft cookie
+		http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
+		//getting logged user userId and id
+		_, usersid, _ := session.WhoIsThis(cookie.Value)
+		usersIdurl := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
+		//checking if the id of the logged user is same as the id in url path
+		if usersid == usersIdurl {
+			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", usersid}}, [][]string{})
 			user := ReadUser(Query, arguments)
-			template.Execute(w, user[0])
+			template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
+			if err != nil {
+				fmt.Println(err)
+			}
+			datatosend := datatosend{CSRFT: csrft, User: user[0]}
+			template.Execute(w, datatosend)
+		} else {
+			http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		}
+	} else {
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	}
 }
 
 func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		r.ParseForm()
-		Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
-		UpdateUser(Query, arguments)
-		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+	cookie, err := r.Cookie("session_id")
+	//checking if session id exist or not, that means if the user is logged in or not.
+	if err == nil && cookie != nil {
+		generatedCSRFT, err := r.Cookie("updateusercsrft")
+		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		//checking if the csrft cookie exists
+		if err == nil && generatedCSRFT != nil {
+			r.ParseForm()
+			if generatedCSRFT.Value == r.Form.Get("csrft") {
+				//checking if the request method is equal to POST
+				if r.Method == "POST" {
+					//getting user to edit
+					Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", r.Form.Get("id")}, {"userId", loggedUser}, {"password", tools.HashThis(r.Form.Get("currentpassword"))}}, [][]string{})
+					user := ReadUser(Query, arguments)
+					//checking if it had any result or not
+					if len(user) == 1 {
+						//checkinf if the user entered a new password
+						if len(r.Form.Get("newpassword")) != 0 {
+							Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"password", tools.HashThis(r.Form.Get("newpassword"))}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
+							UpdateUser(Query, arguments)
+							http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+						} else {
+							//this means user didn't provide a new password
+							Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", r.Form.Get("username")}, {"firstName", r.Form.Get("FirstName")}, {"lastName", r.Form.Get("LastName")}, {"email", r.Form.Get("Email")}, {"phoneNumber", r.Form.Get("PhoneNumber")}})
+							UpdateUser(Query, arguments)
+							http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+							http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+						}
+					} else {
+						http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+						http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+					}
+				} else {
+					http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+					http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+				}
+			} else {
+				http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+				http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+			}
+		} else {
+			http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		}
 	} else {
-		fmt.Println("wrong method")
-		http.Redirect(w, r, "/users/home", http.StatusMethodNotAllowed)
+		http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
+		http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 	}
 }
 

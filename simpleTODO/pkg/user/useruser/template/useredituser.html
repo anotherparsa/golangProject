@@ -9,33 +9,45 @@
         <h1>Edit your Account</h1>
         <form action="/users/edituserprocessor" method="post">
             <div class="form-group">
-                <input type="hidden" name="id" value={{.ID}}>
+                <input type="hidden" name="id" value={{.User.ID}}>
                 <label for="username">current username : </label>
-                <input type="text" id="username" name="username" value={{.Username}}>
+                <input type="text" id="username" name="username" value={{.User.Username}} required>
             </div>
 
             <div class="form-group">
                 <label for="FirstName">Current First name : </label>
-                <input type="text" id="FirstName" name="FirstName" value={{.FirstName}}>
+                <input type="text" id="FirstName" name="FirstName" value={{.User.FirstName}} required>
+            </div>
+
+            <div class="form-group">
+                <label for="currentpassword">Current Password : </label>
+                <input type="password" id="currentpassword" name="currentpassword" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newpassword">New Password : </label>
+                <input type="newpassword" id="newpassword" name="newpassword">
             </div>
 
             <div class="form-group">
                 <label for="LastName">Current Last name : </label>
-                <input type="text" id="LastName" name="LastName" value={{.LastName}}>
+                <input type="text" id="LastName" name="LastName" value={{.User.LastName}} required>
             </div>
 
             <div class="form-group">
                 <label for="Email">Current Email : </label>
-                <input type="text" id="Email" name="Email" value={{.Email}}>
+                <input type="text" id="Email" name="Email" value={{.User.Email}} required>
             </div>
 
             <div class="form-group">
                 <label for="PhoneNumber">Current PhoneNumber : </label>
-                <input type="text" id="PhoneNumber" name="PhoneNumber" value={{.PhoneNumber}}>
+                <input type="text" id="PhoneNumber" name="PhoneNumber" value={{.User.PhoneNumber}} required>
             </div>
+            <input type="hidden" name="csrft" value="{{.CSRFT}}">
 
             <button type="submit" id="submit">Update User Info</button>
         </form>
+        <a href="/users/home"><button id="submit">go back</button></a>
         </div>
     </div>
 </body>

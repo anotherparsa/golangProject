@@ -120,8 +120,10 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	if err == nil && cookie != nil {
 		generatedCSRFT, err := r.Cookie("updatetaskcsrft")
 		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		//checking if the csrft cookie exists
 		if err == nil && generatedCSRFT != nil {
 			r.ParseForm()
+			//checking if the sent csrft is the same as generated one
 			if generatedCSRFT.Value == r.Form.Get("csrft") {
 				//checking if the request method is equal to POST
 				if r.Method == "POST" {
