@@ -25,7 +25,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		csrft := tools.GenerateUUID()
 		//setting csrft cookie
 		http.SetCookie(w, &http.Cookie{Name: "homecsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
-		username, usersid, userId := session.WhoIsThis(cookie.Value)
+		username, usersid, userId, _, _ := session.WhoIsThis(cookie.Value)
 		//getting loged user tasks based of thier userId as the author of the tasks.
 		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 		tasks := usertask.ReadTask(query, arguments)

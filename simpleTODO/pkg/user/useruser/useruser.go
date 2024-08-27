@@ -57,7 +57,7 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		//setting csrft cookie
 		http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 		//getting logged user userId and id
-		_, usersid, _ := session.WhoIsThis(cookie.Value)
+		_, usersid, _, _, _ := session.WhoIsThis(cookie.Value)
 		usersIdurl := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
 		//checking if the id of the logged user is same as the id in url path
 		if usersid == usersIdurl {
@@ -83,7 +83,7 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 	//checking if session id exist or not, that means if the user is logged in or not.
 	if err == nil && cookie != nil {
 		generatedCSRFT, err := r.Cookie("updateusercsrft")
-		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		_, _, loggedUser, _, _ := session.WhoIsThis(cookie.Value)
 		//checking if the csrft cookie exists
 		if err == nil && generatedCSRFT != nil {
 			r.ParseForm()

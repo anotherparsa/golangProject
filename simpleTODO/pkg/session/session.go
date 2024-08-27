@@ -1,9 +1,7 @@
 package session
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"todoproject/pkg/databasetools"
 )
@@ -27,26 +25,32 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
 
-func WhoIsThis(session_id string) (string, string, string) {
-	var user_id string
+func WhoIsThis(session_id string) (string, string, string, string, string) {
 	var username string
 	var users_id string
+	var user_id string
+	var suspended string
+	var rule string
+
+	//getting the userId of the logged user corresponding to the session_id
 	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	rows, err := safequery.Query(arguments...)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	defer rows.Close()
+
 	for rows.Next() {
-		if err := rows.Scan(&user_id); err != nil {
+		err := rows.Scan(&user_id)
+		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	query, arguments = databasetools.QuerryMaker("select", []string{"username", "id"}, "users", [][]string{{"userId", user_id}}, [][]string{})
+	//getting user's id, user's username', user's rule and user's suspend status
+	query, arguments = databasetools.QuerryMaker("select", []string{"id", "username", "rule", "suspended"}, "users", [][]string{{"userId", user_id}}, [][]string{})
 	safequery, err = databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
@@ -57,24 +61,9 @@ func WhoIsThis(session_id string) (string, string, string) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&username, &users_id); err != nil {
+		if err := rows.Scan(&users_id, &username, &rule, &suspended); err != nil {
 			fmt.Println(err)
 		}
 	}
-	return username, users_id, user_id
-}
-
-func ReadSessions(database *sql.DB) {
-	rows, err := database.Query("SELECT sessionId, userId FROM sessions")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var sessionId string
-		var userId string
-		if err := rows.Scan(&sessionId, &userId); err != nil {
-			fmt.Println(err)
-		}
-	}
+	return username, users_id, user_id, rule, suspended
 }

@@ -42,7 +42,7 @@ func CreateUserMessageProcessor(w http.ResponseWriter, r *http.Request) {
 				//checking if the request method is POST or not
 				if r.Method == "POST" {
 					//getting logged user's username
-					username, _, _ := session.WhoIsThis(cookie.Value)
+					username, _, _, _, _ := session.WhoIsThis(cookie.Value)
 					//getting users input values
 					priority := r.Form.Get("priority")
 					category := r.Form.Get("category")

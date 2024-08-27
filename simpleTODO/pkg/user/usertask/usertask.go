@@ -29,7 +29,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 				//checking if the request mothod is POST or not
 				if r.Method == "POST" {
 					//getting user's user_Id
-					_, _, author := session.WhoIsThis(cookie.Value)
+					_, _, author, _, _ := session.WhoIsThis(cookie.Value)
 					//getting users input values
 					priority := r.Form.Get("priority")
 					category := r.Form.Get("category")
@@ -120,7 +120,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		//setting csrft cookie
 		http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 		//getting logged user userId
-		_, _, userId := session.WhoIsThis(cookie.Value)
+		_, _, userId, _, _ := session.WhoIsThis(cookie.Value)
 		taskId := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
 		//getting task to edit
 		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskId}, {"author", userId}}, [][]string{})
@@ -144,7 +144,7 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err == nil && cookie != nil {
 		generatedCSRFT, err := r.Cookie("updatetaskcsrft")
-		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		_, _, loggedUser, _, _ := session.WhoIsThis(cookie.Value)
 		//checking if the csrft cookie exists
 		if err == nil && generatedCSRFT != nil {
 			r.ParseForm()
@@ -227,7 +227,7 @@ func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	//check if session_id exist or not, that means if the user is logged in or not
 	if err == nil && cookie != nil {
 		//getting the userId of the logged user
-		_, _, loggedUser := session.WhoIsThis(cookie.Value)
+		_, _, loggedUser, _, _ := session.WhoIsThis(cookie.Value)
 		//getting the task id from url
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
 		//getting the task with that id and that userId as author

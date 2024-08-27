@@ -1,9 +1,13 @@
 package databasetools
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
+	"os"
 	"regexp"
+	"strings"
+	"todoproject/pkg/tools"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -18,7 +22,7 @@ const (
 	database = "todo"
 )
 
-//opening a connection 
+//opening a connection
 func connect() (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
 	return sql.Open("mysql", dsn)
@@ -175,4 +179,50 @@ func QuerryMaker(operation string, columns []string, table string, conditions []
 	}
 
 	return "invalid operation", nil
+}
+
+func InitializeAdminUser() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Please enter username for your admin user")
+	username, err := reader.ReadString('\n')
+	username = strings.TrimSpace(username)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//checking if the username is valid
+	if tools.ValidateUserInfoFormInputs("username", username) {
+		fmt.Println("Please enter password for your admin user")
+		password, err := reader.ReadString('\n')
+		password = strings.TrimSpace(password)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//checking if the password is valid
+		if tools.ValidateUserInfoFormInputs("password", password) {
+			//generating a user_id
+			userId := tools.GenerateUUID()
+			//hashing the password
+			password = tools.HashThis(password)
+			//creating a user record in users database
+			query, arguments := QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", password}, {"firstName", "empty"}, {"lastName", "empty"}, {"email", "empty"}, {"phoneNumber", "empty"}, {"rule", "admin"}, {"suspended", "no"}})
+			InitializeAdminUserInDatabase(query, arguments)
+		} else {
+			fmt.Println("Invalid password")
+			os.Exit(0)
+		}
+	} else {
+		fmt.Println("Invalid username")
+		os.Exit(0)
+	}
+}
+
+func InitializeAdminUserInDatabase(query string, arguments []interface{}) {
+	safequery, err := DataBase.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = safequery.Exec(arguments...)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
