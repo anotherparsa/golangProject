@@ -1,5 +1,4 @@
 *delete accound
-*server side input validation (done with sign up ) => do with login edit user and edit task
 *validating unique username, email, phone number
 *done / undone button for tasks
 *delete session id from database when user logs out.

@@ -61,6 +61,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 			adminhome.AdminHomePageHandler(w, r)
 		} else if urlPath == "/admin/messages" {
 			adminmessages.AdminMessagesPageHandler(w, r)
+		} else if urlPath == "/admin/loginprocess" {
+			adminlogin.AdminLoginProcessHandler(w, r)
 		}
 	} else {
 		fmt.Fprintf(w, "Page Not Found")

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <head>
-    <title>Login Page</title>
+    <title>Admin Login Page</title>
     <link rel="stylesheet" href="/static/loginAndSignup.css">
 </head>
 <body>
     <div class="container">
-        <h1>Login Up</h1>
-        <form action="/users/loginprocess" method="POST">
+        <h1>Login</h1>
+        <form action="/admin/loginprocess" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -14,13 +14,12 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                <input type="hidden" name="csrft" value="{{.CSRFT}}">
             </div>
-            <input type="hidden" name="csrf-token" value={{.Csrf_token}}>
             <div class="form-group">
             </div>
-            <button type="submit">Sign Up</button>
+            <button type="submit">Login</button>
         </form>
-        <p class="message">Don't have an account?<a href="/users/signup">Signup</a></p>
     </div>
 </body>
 </html>

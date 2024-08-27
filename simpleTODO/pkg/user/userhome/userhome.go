@@ -20,7 +20,7 @@ type dataToSend struct {
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
-	if err == nil || cookie != nil {
+	if err == nil && cookie != nil {
 		//generating csrft
 		csrft := tools.GenerateUUID()
 		//setting csrft cookie
@@ -35,6 +35,6 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		template.Execute(w, data)
 
 	} else {
-		http.Redirect(w, r, "/users/signup", http.StatusSeeOther)
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 	}
 }
