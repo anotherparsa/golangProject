@@ -67,6 +67,10 @@ func AdminUsersManagementProcess(w http.ResponseWriter, r *http.Request) {
 							//we are going to delete the user
 						} else if operation == "promotetoadmin" {
 							//we are going to promote the user to admin rule.
+							query, arguments := databasetools.QuerryMaker("update", []string{"suspended"}, "users", [][]string{{"username", targetUsername}}, [][]string{{"rule", "admin"}})
+							useruser.UpdateUser(query, arguments)
+							http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
+							http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
 
 						} else if operation == "untempsuspend" {
 							//we are going to unsuspend the user
@@ -77,7 +81,10 @@ func AdminUsersManagementProcess(w http.ResponseWriter, r *http.Request) {
 
 						} else if operation == "unpromotetoadmin" {
 							//we are going to demote the user to admin rule.
-
+							query, arguments := databasetools.QuerryMaker("update", []string{"suspended"}, "users", [][]string{{"username", targetUsername}}, [][]string{{"rule", "user"}})
+							useruser.UpdateUser(query, arguments)
+							http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
+							http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
 
 						} else {
 							http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})

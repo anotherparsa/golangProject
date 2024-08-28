@@ -1,7 +1,6 @@
 package adminlogin
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -99,19 +98,9 @@ func AdminLoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func ValidateUser(username string, password string) bool {
-	rows, err := databasetools.DataBase.Query("SELECT password FROM users where username=?", username)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	if !rows.Next() {
-		fmt.Println("User Not found in validate user")
-	}
-	var storedPassword string
-	err = rows.Scan(&storedPassword)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return storedPassword == password
-
+	//getting user based of thier provided username and password
+	query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}, {"rule", "admin"}}, [][]string{})
+	user := useruser.ReadUser(query, arguments)
+	//that means there is a user with that username and that password.
+	return (len(user) != 0)
 }
