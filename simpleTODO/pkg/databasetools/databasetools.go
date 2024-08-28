@@ -231,13 +231,6 @@ func ValidateUserInfoFormInputs(tobevalidated string, valuetobevalidated string)
 				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
 					validationFlag = false
 					return validationFlag
-				} else {
-					query, arguments := QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", valuetobevalidated}}, [][]string{})
-					user := ReadUser(query, arguments)
-					if len(user) != 0 {
-						validationFlag = false
-						return validationFlag
-					}
 				}
 			}
 		}

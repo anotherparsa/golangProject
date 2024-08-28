@@ -60,8 +60,13 @@ func AdminUsersManagementProcess(w http.ResponseWriter, r *http.Request) {
 							//we are going to suspend the user
 							if targetUsername != "admin" {
 								//getting the user
-								query, arguments := databasetools.QuerryMaker("update", []string{"suspended"}, "users", [][]string{{"username", targetUsername}}, [][]string{{"suspended", "yes"}})
+								query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", targetUsername}}, [][]string{})
+								targetUser := useruser.ReadUser(query, arguments)
+								query, arguments = databasetools.QuerryMaker("update", []string{"suspended"}, "users", [][]string{{"username", targetUsername}}, [][]string{{"suspended", "yes"}})
 								useruser.UpdateUser(query, arguments)
+								//deleting users sessions
+								query, arguments = databasetools.QuerryMaker("delete", []string{}, "sessions", [][]string{{"userId", targetUser[0].UserId}}, [][]string{})
+								useruser.DeleteUserInfo(query, arguments)
 								http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
 								http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
 							} else {

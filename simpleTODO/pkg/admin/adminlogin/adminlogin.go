@@ -1,6 +1,7 @@
 package adminlogin
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -102,5 +103,6 @@ func ValidateUser(username string, password string) bool {
 	query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}, {"rule", "admin"}}, [][]string{})
 	user := useruser.ReadUser(query, arguments)
 	//that means there is a user with that username and that password.
+	fmt.Println(len(user))
 	return (len(user) != 0)
 }
