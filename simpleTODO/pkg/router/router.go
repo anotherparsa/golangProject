@@ -7,6 +7,7 @@ import (
 	"todoproject/pkg/admin/adminhome"
 	"todoproject/pkg/admin/adminlogin"
 	"todoproject/pkg/admin/adminmessages"
+	"todoproject/pkg/admin/adminusers"
 	"todoproject/pkg/session"
 	"todoproject/pkg/user/userhome"
 	"todoproject/pkg/user/userlogin"
@@ -63,6 +64,10 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 			adminmessages.AdminMessagesPageHandler(w, r)
 		} else if urlPath == "/admin/loginprocess" {
 			adminlogin.AdminLoginProcessHandler(w, r)
+		} else if urlPath == "/admin/usersmanagement" {
+			adminusers.AdminUsersManagementPage(w, r)
+		} else if urlPath == "/admin/usersmanagementprocess" {
+			adminusers.AdminUsersManagementProcess(w, r)
 		}
 	} else {
 		fmt.Fprintf(w, "Page Not Found")
