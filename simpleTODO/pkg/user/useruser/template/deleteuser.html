@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/homestyle.css">
+    <title>Delete Account</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit your Account</h1>
+        <br>
+        <h1>Please be sure, you're permanently deleting your account and all related data this action can't be undone!</h1>
+        <form action="/users/deleteuserprocessor" method="post">
+
+            <div class="form-group">
+                <input type="hidden" name="id" value={{.User.ID}}>
+                <label for="username">current username : </label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <input type="hidden" name="id" value={{.User.ID}}>
+                <label for="currentpassword">Current Password : </label>
+                <input type="password" id="currentpassword" name="currentpassword" required>
+            </div>
+            
+            <input type="hidden" name="csrft" value="{{.CSRFT}}">
+
+            <button type="submit" id="submit">Delete Account</button>
+        </form>
+        <a href="/users/home"><button id="submit">go back</button></a>
+        </div>
+    </div>
+</body>
+</html>

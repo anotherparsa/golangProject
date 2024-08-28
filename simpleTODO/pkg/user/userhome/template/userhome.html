@@ -12,6 +12,7 @@
         <h1>welcome {{.Username}}</h1>
         <div class="buttons">
             <a href="/users/logout"><button>Logout</button></a>
+            <a href="/users/deleteaccount/{{.Userid}}"><button>Delete account</button></a>
             <a href="/users/editaccount/{{.Userid}}"><button>Edit Account</button></a>
             <a href="/users/messages"><button>Send message</button></a>
         </div>

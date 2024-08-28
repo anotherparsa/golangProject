@@ -50,6 +50,10 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 			useruser.UpdateUserProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/users/editaccount") {
 			useruser.UpdateUserPageHandler(w, r)
+		} else if strings.HasPrefix(urlPath, "/users/deleteaccount") {
+			useruser.DeleteUserPageHandler(w, r)
+		} else if urlPath == "/users/deleteuserprocessor" {
+			useruser.DeleteUserProcessor(w, r)
 		} else if urlPath == "/users/messages" {
 			usermessages.UserMessagePageHandler(w, r)
 		} else if urlPath == "/users/createmessageprocessor" {
