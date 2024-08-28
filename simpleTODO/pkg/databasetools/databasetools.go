@@ -357,11 +357,6 @@ func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidate
 			if len(valuetobevalidated) > 20 {
 				validationFlag = false
 				return validationFlag
-			} else {
-				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
-					validationFlag = false
-					return validationFlag
-				}
 			}
 		}
 	} else if tobevalidated == "title" {
@@ -369,7 +364,7 @@ func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidate
 			validationFlag = false
 			return validationFlag
 		} else {
-			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+			if len(valuetobevalidated) > 30 {
 				validationFlag = false
 				return validationFlag
 			}
@@ -379,7 +374,7 @@ func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidate
 			validationFlag = false
 			return validationFlag
 		} else {
-			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+			if len(valuetobevalidated) > 70 {
 				validationFlag = false
 				return validationFlag
 			}
