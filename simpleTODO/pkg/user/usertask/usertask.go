@@ -36,10 +36,10 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 					title := r.Form.Get("title")
 					description := r.Form.Get("description")
 					//validating users input on tasks forms
-					if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
-						if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
-							if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
-								if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+					if databasetools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+						if databasetools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+							if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+								if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 									//creating a task record in tasks table
 									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
 									CreateTask(query, arguments)
@@ -158,11 +158,11 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 					title := r.Form.Get("title")
 					description := r.Form.Get("description")
 					id := r.Form.Get("id")
-					if tools.ValidateTaskOrMessageInfoFormInputs("id", id) {
-						if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
-							if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
-								if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
-									if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+					if databasetools.ValidateTaskOrMessageInfoFormInputs("id", id) {
+						if databasetools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+							if databasetools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+								if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+									if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 										//getting task to edit
 										Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", id}, {"author", loggedUser}}, [][]string{})
 										task := ReadTask(Query, arguments)

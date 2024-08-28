@@ -99,13 +99,13 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 					email := r.Form.Get("email")
 					phoneNumber := r.Form.Get("phoneNumber")
 					//checking if forms input are valid or not
-					if tools.ValidateUserInfoFormInputs("id", id) {
-						if tools.ValidateUserInfoFormInputs("username", username) {
-							if tools.ValidateUserInfoFormInputs("password", currentpassword) {
-								if tools.ValidateUserInfoFormInputs("firstName", firstName) {
-									if tools.ValidateUserInfoFormInputs("lastName", lastName) {
-										if tools.ValidateUserInfoFormInputs("email", email) {
-											if tools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
+					if databasetools.ValidateUserInfoFormInputs("id", id) {
+						if databasetools.ValidateUserInfoFormInputs("username", username) {
+							if databasetools.ValidateUserInfoFormInputs("password", currentpassword) {
+								if databasetools.ValidateUserInfoFormInputs("firstName", firstName) {
+									if databasetools.ValidateUserInfoFormInputs("lastName", lastName) {
+										if databasetools.ValidateUserInfoFormInputs("email", email) {
+											if databasetools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
 												//getting user to edit
 												Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
 												user := ReadUser(Query, arguments)
@@ -113,7 +113,7 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 												if len(user) == 1 {
 													//checkinf if the user entered a new password
 													if len(newpassword) != 0 {
-														if tools.ValidateTaskOrMessageInfoFormInputs("password", newpassword) {
+														if databasetools.ValidateTaskOrMessageInfoFormInputs("password", newpassword) {
 															Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", username}, {"password", tools.HashThis(newpassword)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
 															UpdateUser(Query, arguments)
 															http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
@@ -234,9 +234,9 @@ func DeleteUserProcessor(w http.ResponseWriter, r *http.Request) {
 					username := r.Form.Get("username")
 					currentpassword := r.Form.Get("currentpassword")
 					//checking if forms input are valid or not
-					if tools.ValidateUserInfoFormInputs("id", id) {
-						if tools.ValidateUserInfoFormInputs("username", username) {
-							if tools.ValidateUserInfoFormInputs("password", currentpassword) {
+					if databasetools.ValidateUserInfoFormInputs("id", id) {
+						if databasetools.ValidateUserInfoFormInputs("username", username) {
+							if databasetools.ValidateUserInfoFormInputs("password", currentpassword) {
 								//getting user to edit
 								Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
 								user := ReadUser(Query, arguments)

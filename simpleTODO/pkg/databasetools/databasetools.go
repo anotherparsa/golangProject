@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"todoproject/pkg/models"
 	"todoproject/pkg/tools"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -183,35 +184,23 @@ func QuerryMaker(operation string, columns []string, table string, conditions []
 
 func InitializeAdminUser() {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Please enter username for your admin user")
-	username, err := reader.ReadString('\n')
-	username = strings.TrimSpace(username)
+	fmt.Println("Please enter password for your admin user")
+	adminpassword, err := reader.ReadString('\n')
+	adminpassword = strings.TrimSpace(adminpassword)
 	if err != nil {
 		fmt.Println(err)
 	}
-	//checking if the username is valid
-	if tools.ValidateUserInfoFormInputs("username", username) {
-		fmt.Println("Please enter password for your admin user")
-		password, err := reader.ReadString('\n')
-		password = strings.TrimSpace(password)
-		if err != nil {
-			fmt.Println(err)
-		}
-		//checking if the password is valid
-		if tools.ValidateUserInfoFormInputs("password", password) {
-			//generating a user_id
-			userId := tools.GenerateUUID()
-			//hashing the password
-			password = tools.HashThis(password)
-			//creating a user record in users database
-			query, arguments := QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", password}, {"firstName", "empty"}, {"lastName", "empty"}, {"email", "empty"}, {"phoneNumber", "empty"}, {"rule", "admin"}, {"suspended", "no"}})
-			InitializeAdminUserInDatabase(query, arguments)
-		} else {
-			fmt.Println("Invalid password")
-			os.Exit(0)
-		}
+	//checking if the password is valid
+	if ValidateUserInfoFormInputs("password", adminpassword) {
+		//generating a user_id
+		userId := tools.GenerateUUID()
+		//hashing the password
+		adminpassword = tools.HashThis(adminpassword)
+		//creating a user record in users database
+		query, arguments := QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", "admin"}, {"password", adminpassword}, {"firstName", "empty"}, {"lastName", "empty"}, {"email", "empty"}, {"phoneNumber", "empty"}, {"rule", "admin"}, {"suspended", "no"}})
+		InitializeAdminUserInDatabase(query, arguments)
 	} else {
-		fmt.Println("Invalid username")
+		fmt.Println("Invalid password")
 		os.Exit(0)
 	}
 }
@@ -225,4 +214,198 @@ func InitializeAdminUserInDatabase(query string, arguments []interface{}) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func ValidateUserInfoFormInputs(tobevalidated string, valuetobevalidated string) bool {
+	validationFlag := true
+
+	if tobevalidated == "username" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 5 || len(valuetobevalidated) > 30 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				} else {
+					query, arguments := QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", valuetobevalidated}}, [][]string{})
+					user := ReadUser(query, arguments)
+					if len(user) != 0 {
+						validationFlag = false
+						return validationFlag
+					}
+				}
+			}
+		}
+	} else if tobevalidated == "password" {
+		if tobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 5 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`[a-zA-Z]`).MatchString(valuetobevalidated) && regexp.MustCompile(`\d`).MatchString(valuetobevalidated) && regexp.MustCompile(`[\W_]`).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "firstname" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "lastname" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[A-Za-z]+$`).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "email" {
+		if valuetobevalidated == "" {
+			fmt.Println("Empty email")
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) > 40 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "phonenumber" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) != 10 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile(`(^\d+$)`).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "id" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if !(regexp.MustCompile(`(^\d+$)`).MatchString(valuetobevalidated)) {
+				validationFlag = false
+				return validationFlag
+			}
+		}
+	}
+
+	return validationFlag
+}
+
+func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidated string) bool {
+	validationFlag := true
+	if tobevalidated == "priority" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 6 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "category" {
+		if tobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			} else {
+				if !(regexp.MustCompile((`^[A-Za-z]+$`)).MatchString(valuetobevalidated)) {
+					validationFlag = false
+					return validationFlag
+				}
+			}
+		}
+	} else if tobevalidated == "title" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			}
+		}
+	} else if tobevalidated == "description" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if len(valuetobevalidated) < 3 || len(valuetobevalidated) > 20 {
+				validationFlag = false
+				return validationFlag
+			}
+		}
+	}
+	return validationFlag
+}
+
+func ReadUser(query string, arguments []interface{}) []models.User {
+	safequery, err := DataBase.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+	}
+	rows, err := safequery.Query(arguments...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	user := models.User{}
+	users := []models.User{}
+	for rows.Next() {
+		err = rows.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber, &user.Rule, &user.Suspended)
+		if err != nil {
+			fmt.Println(err)
+		}
+		users = append(users, user)
+	}
+	return users
 }

@@ -49,10 +49,10 @@ func CreateUserMessageProcessor(w http.ResponseWriter, r *http.Request) {
 					title := r.Form.Get("title")
 					description := r.Form.Get("description")
 					//form input validation
-					if tools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
-						if tools.ValidateTaskOrMessageInfoFormInputs("category", category) {
-							if tools.ValidateTaskOrMessageInfoFormInputs("title", title) {
-								if tools.ValidateTaskOrMessageInfoFormInputs("description", description) {
+					if databasetools.ValidateTaskOrMessageInfoFormInputs("priority", priority) {
+						if databasetools.ValidateTaskOrMessageInfoFormInputs("category", category) {
+							if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
+								if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 									//creating a message record in messages table
 									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{{"author", username}, {"priority", priority}, {"category", category}, {"title", title}, {"description", description}, {"status", "unfinished"}})
 									CreateMessage(query, arguments)

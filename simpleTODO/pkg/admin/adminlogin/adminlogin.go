@@ -48,8 +48,8 @@ func AdminLoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 					username := r.Form.Get("username")
 					password := r.Form.Get("password")
 					//checking if form inputs are valid or not
-					if tools.ValidateUserInfoFormInputs("username", username) {
-						if tools.ValidateUserInfoFormInputs("password", password) {
+					if databasetools.ValidateUserInfoFormInputs("username", username) {
+						if databasetools.ValidateUserInfoFormInputs("password", password) {
 							//after form inputs have been validated.
 							password = tools.HashThis(password)
 							//validating the user in the database

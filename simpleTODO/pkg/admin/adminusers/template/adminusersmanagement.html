@@ -8,7 +8,6 @@
     <div class="container">
         <h1>Manage users</h1>
         <form action="/admin/usersmanagementprocess" method="post">
-            
             <div class="form-group">
                 <label for="username">Target username </label>
                 <input type="text" id="username" name="targetusername" required>
@@ -17,9 +16,9 @@
                 <label for="operation">Operation:</label>
                 <select id="operation" name="operation">
                     <option value="tempsuspend">temporarily suspending</option>
+                    <option value="untempsuspend">unsuspending suspended user`</option>
                     <option value="deleteuser">deleting user</option>
                     <option value="promotetoadmin">promote to admin</option>
-                    <option value="untempsuspend">unsuspending suspended user`</option>
                     <option value="unpromotetoadmin">demote to regular user</option>
                 </select>
                 <input type="hidden" name="csrft" value="{{.CSRFT}}">
