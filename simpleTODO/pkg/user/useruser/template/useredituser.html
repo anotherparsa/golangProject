@@ -16,7 +16,11 @@
 
             <div class="form-group">
                 <label for="FirstName">Current First name : </label>
-                <input type="text" id="FirstName" name="FirstName" value={{.User.FirstName}} required>
+                <input type="text" id="FirstName" name="firstname" value={{.User.FirstName}} required>
+            </div>
+            <div class="form-group">
+                <label for="LastName">Current Last name : </label>
+                <input type="text" id="LastName" name="lastname" value={{.User.LastName}} >
             </div>
 
             <div class="form-group">
@@ -30,13 +34,8 @@
             </div>
 
             <div class="form-group">
-                <label for="LastName">Current Last name : </label>
-                <input type="text" id="LastName" name="LastName" value={{.User.LastName}} required>
-            </div>
-
-            <div class="form-group">
                 <label for="Email">Current Email : </label>
-                <input type="text" id="Email" name="Email" value={{.User.Email}} required>
+                <input type="text" id="Email" name="email" value={{.User.Email}} required>
             </div>
 
             <div class="form-group">

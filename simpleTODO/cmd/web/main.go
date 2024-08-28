@@ -12,7 +12,7 @@ func main() {
 	databasetools.CreateDatabase()
 	//initializing the admin user
 	//temporarly disabling
-	//databasetools.InitializeAdminUser()
+	databasetools.InitializeAdminUser()
 	//calling the router
 	http.HandleFunc("/", router.RoutingHandler)
 	//serving static files

@@ -61,7 +61,7 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		usersIdurl := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
 		//checking if the id of the logged user is same as the id in url path
 		if usersid == usersIdurl {
-			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", usersid}}, [][]string{})
+			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"id", usersid}}, [][]string{})
 			user := ReadUser(Query, arguments)
 			template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
 			if err != nil {
@@ -94,8 +94,8 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 					username := r.Form.Get("username")
 					currentpassword := r.Form.Get("currentpassword")
 					newpassword := r.Form.Get("newpassword")
-					firstName := r.Form.Get("firstName")
-					lastName := r.Form.Get("lastName")
+					firstName := r.Form.Get("firstname")
+					lastName := r.Form.Get("lastname")
 					email := r.Form.Get("email")
 					phoneNumber := r.Form.Get("phoneNumber")
 					//checking if forms input are valid or not
