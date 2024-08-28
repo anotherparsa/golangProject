@@ -27,6 +27,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 			usertask.CreateTaskProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/tasks/deletetask") {
 			usertask.DeleteTaskProcessor(w, r)
+		} else if strings.HasPrefix(urlPath, "/tasks/changetaskstatus") {
+			usertask.ChangeTaskStatusProcessor(w, r)
 		} else if urlPath == "/tasks/edittaskprocessor" {
 			usertask.UpdateTaskProcessor(w, r)
 		} else if strings.HasPrefix(urlPath, "/tasks/edittask") {

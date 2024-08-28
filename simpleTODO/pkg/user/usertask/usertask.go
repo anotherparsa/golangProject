@@ -139,6 +139,39 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ChangeTaskStatusProcessor(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session_id")
+	//check if session_id exist or not, that means if the user is logged in or not
+	if err == nil && cookie != nil {
+		//getting the userId of the logged user
+		_, _, loggedUser, _, _ := session.WhoIsThis(cookie.Value)
+		//getting the task id from url
+		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/changetaskstatus/")
+		//getting the task with that id and that userId as author
+		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
+		task := ReadTask(query, arguments)
+		//checking if there was a task to meet those conditions.
+		if len(task) == 1 {
+			//updating task
+			if task[0].Status == "finished" {
+				query, arguments := databasetools.QuerryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "unfinished"}})
+				UpdateTask(query, arguments)
+				http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
+				http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
+			} else {
+				query, arguments := databasetools.QuerryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "finished"}})
+				UpdateTask(query, arguments)
+				http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
+				http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
+			}
+		} else {
+			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/users/login", http.StatusSeeOther)
+	}
+}
+
 func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
