@@ -124,6 +124,16 @@ func ValidateUserInfoFormInputs(tobevalidated string, valuetobevalidated string)
 				}
 			}
 		}
+	} else if tobevalidated == "id" {
+		if valuetobevalidated == "" {
+			validationFlag = false
+			return validationFlag
+		} else {
+			if !(regexp.MustCompile(`(^\d+$)`).MatchString(valuetobevalidated)) {
+				validationFlag = false
+				return validationFlag
+			}
+		}
 	}
 
 	return validationFlag
@@ -182,6 +192,5 @@ func ValidateTaskOrMessageInfoFormInputs(tobevalidated string, valuetobevalidate
 			}
 		}
 	}
-
 	return validationFlag
 }

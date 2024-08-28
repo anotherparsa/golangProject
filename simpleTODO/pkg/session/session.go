@@ -10,17 +10,15 @@ func CreateSession(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
-
 	}
 	_, err = safequery.Exec(arguments...)
 	if err != nil {
 		fmt.Println(err)
-
 	}
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{Name: "homecsrft", MaxAge: -1, Path: "/"})
+	http.SetCookie(w, &http.Cookie{Name: "createtaskcsrft", MaxAge: -1, Path: "/"})
 	http.SetCookie(w, &http.Cookie{Name: "session_id", MaxAge: -1, Path: "/"})
 	http.Redirect(w, r, "/users/login", http.StatusSeeOther)
 }
