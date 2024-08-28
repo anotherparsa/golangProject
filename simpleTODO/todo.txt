@@ -1,4 +1,3 @@
 *delete accound
-*validating unique username, email, phone number
 *done / undone button for tasks
 *delete session id from database when user logs out.
