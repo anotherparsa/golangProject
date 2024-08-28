@@ -57,7 +57,7 @@ func AdminLoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 								//generating a session_id
 								sessionId := tools.GenerateUUID()
 								//getting user to set a session_id corresponding to their userId
-								query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}, {"rule", "admin"}}, [][]string{})
+								query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", username}, {"password", password}, {"rule", "admin"}}, [][]string{})
 								user := useruser.ReadUser(query, arguments)
 								//setting the session_id cookie
 								http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})

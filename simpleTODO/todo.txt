@@ -1,3 +1,4 @@
-*delete accound
+*check for username, phone number, email to be unique when user is creating or editing thier account.
+* a newly user who was promoted to be admin shouldn't be able to take the admin right from the real admin
 *done / undone button for tasks
 *delete session id from database when user logs out.

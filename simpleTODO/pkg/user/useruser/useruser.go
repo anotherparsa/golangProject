@@ -40,7 +40,7 @@ func ReadUser(query string, arguments []interface{}) []models.User {
 	user := models.User{}
 	users := []models.User{}
 	for rows.Next() {
-		err = rows.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber)
+		err = rows.Scan(&user.ID, &user.UserId, &user.Username, &user.Password, &user.FirstName, &user.LastName, &user.Email, &user.PhoneNumber, &user.Rule, &user.Suspended)
 		if err != nil {
 			fmt.Println(err)
 		}

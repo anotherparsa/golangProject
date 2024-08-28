@@ -1,3 +1,23 @@
+features:
+this is a multi-user web app
+users can sign up a new account
+login to their account
+logout from their account
+delete their account permanently 
+edit their account information
+create a new tasks
+see their tasks
+edit their tasks
+delete their tasks
+send message to the sites' admin
+admin can see Total users, Total messages sent by users, Total tasks created in the database.
+admin can see messages sent by the users
+can promote / demote users
+can temporarly suspend / unsuspend a user
+can permanently delete a user's account
+
++++++++++++++++++++++++++++++++++++++++
+
 Database's schema:
 users table has these columns:
 id           int

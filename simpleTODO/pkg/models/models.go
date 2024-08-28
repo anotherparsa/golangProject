@@ -12,6 +12,7 @@ type User struct {
 	Email       string
 	PhoneNumber string
 	Rule        string
+	Suspended   string
 }
 
 type Task struct {
@@ -21,7 +22,7 @@ type Task struct {
 	Category    string
 	Title       string
 	Description string
-	Status    string
+	Status      string
 }
 
 type Session struct {
@@ -37,7 +38,7 @@ type Messages struct {
 	Category    string
 	Title       string
 	Description string
-	Status    string
+	Status      string
 }
 
 type Static struct {
