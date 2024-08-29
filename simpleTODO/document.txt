@@ -3,17 +3,18 @@ this is a multi-user web app
 users can sign up a new account
 login to their account
 logout from their account
-delete their account permanently 
+delete their account permanently (RTBF)
 edit their account information
 create a new tasks
 see their tasks
 edit their tasks
+finished / unfinished their task
 delete their tasks
 send message to the sites' admin
 admin can see Total users, Total messages sent by users, Total tasks created in the database.
 admin can see messages sent by the users
 can promote / demote users
-can temporarly suspend / unsuspend a user
+can temporarly suspend / unsuspend a user and restrict their access to the site.
 can permanently delete a user's account
 
 +++++++++++++++++++++++++++++++++++++++
