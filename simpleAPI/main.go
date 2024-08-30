@@ -36,7 +36,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 func HandleRequest() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", HomePage)
-	myRouter.HandleFunc("/articles", AllArticles)
+	myRouter.HandleFunc("/articles", AllArticles).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 
