@@ -13,9 +13,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Should not be a singleton
 var DataBase *sql.DB
 
 const (
+	// should be read from env variable via os.Getenv or packages that do that
 	username = "testuser"
 	password = "testpass"
 	hostname = "localhost"
@@ -23,14 +25,17 @@ const (
 	database = "todo"
 )
 
-//opening a connection
+// opening a connection
 func connect() (*sql.DB, error) {
+	// you could use os.ExpandEnv to read everything from the env variable in one go
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, database)
 	return sql.Open("mysql", dsn)
 }
 
-//caling the connnect function
+// caling the connnect function
 func CreateDatabase() {
+	// catch the error, this could really happen, and you want to know why it didn't work,
+	// so at least log it, or return one level up
 	DataBase, _ = connect()
 }
 func isValidIdentifier(identifier string) bool {
@@ -38,8 +43,9 @@ func isValidIdentifier(identifier string) bool {
 	return validIdentifier.MatchString(identifier)
 }
 
-//making queries for sql
-func QuerryMaker(operation string, columns []string, table string, conditions [][]string, values [][]string) (string, []interface{}) {
+// making queries for sql
+// this seems like a bad idea that can have bad side effect that are hard to detect
+func QueryMaker(operation string, columns []string, table string, conditions [][]string, values [][]string) (string, []interface{}) {
 	var args []interface{}
 	var query string
 
@@ -77,6 +83,8 @@ func QuerryMaker(operation string, columns []string, table string, conditions []
 				if !first {
 					query += " AND "
 				}
+				// even if you use ? here, this query building function could have some SQL injection
+				// you could pass `1 = 1; --` in columnName, and you select/delete everything
 				query += fmt.Sprintf("%s = ?", columnName)
 				args = append(args, value)
 				first = false
@@ -186,6 +194,7 @@ func InitializeAdminUser() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Please enter password for your admin user")
 	adminpassword, err := reader.ReadString('\n')
+	// maybe the password has some space needed. I know I use some space in my passwords.
 	adminpassword = strings.TrimSpace(adminpassword)
 	if err != nil {
 		fmt.Println(err)
@@ -197,7 +206,8 @@ func InitializeAdminUser() {
 		//hashing the password
 		adminpassword = tools.HashThis(adminpassword)
 		//creating a user record in users database
-		query, arguments := QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", "admin"}, {"password", adminpassword}, {"firstName", "empty"}, {"lastName", "empty"}, {"email", "empty"}, {"phoneNumber", "empty"}, {"rule", "admin"}, {"suspended", "no"}})
+		// this querymaker API is not really readable
+		query, arguments := QueryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", "admin"}, {"password", adminpassword}, {"firstName", "empty"}, {"lastName", "empty"}, {"email", "empty"}, {"phoneNumber", "empty"}, {"rule", "admin"}, {"suspended", "no"}})
 		InitializeAdminUserInDatabase(query, arguments)
 	} else {
 		fmt.Println("Invalid password")
@@ -206,16 +216,21 @@ func InitializeAdminUser() {
 }
 
 func InitializeAdminUserInDatabase(query string, arguments []interface{}) {
+	// not so safe as explained in the QueryMaker func
 	safequery, err := DataBase.Prepare(query)
 	if err != nil {
+		// more than print, you should just return the error and stop the program, there is no good way forward after this.
 		fmt.Println(err)
 	}
 	_, err = safequery.Exec(arguments...)
 	if err != nil {
+		// more than print, you should just return the error and stop the program, there is no good way forward after this.
+		// and in the caller, you should check the error and stop there.
 		fmt.Println(err)
 	}
 }
 
+// use different function for different input, don't regroup everything. It's harder to read and reason about.
 func ValidateUserInfoFormInputs(tobevalidated string, valuetobevalidated string) bool {
 	validationFlag := true
 
