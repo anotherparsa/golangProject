@@ -3,43 +3,36 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type Article struct {
-	Title   string `json:"Title"`
-	Desc    string `json:"Desc"`
-	Content string `json:"Content"`
+	Title       string
+	Description string
+	Content     string
 }
 
-type Articles []Article
+var Articles []Article
 
-func AllArticles(w http.ResponseWriter, r *http.Request) {
-	articles := Articles{
-		{
-			Title:   "test title",
-			Desc:    "test desc",
-			Content: "test content",
-		},
-	}
-	fmt.Fprintf(w, "Endpoint Hit: All Articles Endpoint")
-	json.NewEncoder(w).Encode(articles)
-}
+func main() {
+	Articles = append(Articles, Article{Title: "test title1", Description: "test description1", Content: "test content1"})
+	Articles = append(Articles, Article{Title: "test title2", Description: "test description2", Content: "test content2"})
+	Articles = append(Articles, Article{Title: "test title3", Description: "test description3", Content: "test content3"})
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Home Page Endpoint hit")
+	HandleRequest()
 }
 
 func HandleRequest() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", HomePage)
-	myRouter.HandleFunc("/articles", AllArticles).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", myRouter))
+	http.HandleFunc("/", ShowHomePage)
+	http.HandleFunc("/articles", ShowArticles)
+	http.ListenAndServe(":8080", nil)
+
 }
 
-func main() {
-	HandleRequest()
+func ShowHomePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "this is the home page")
+}
+
+func ShowArticles(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(Articles)
 }
