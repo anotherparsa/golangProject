@@ -26,8 +26,8 @@ func main() {
 
 func HandleRequest() {
 	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", ShowHomePage)
-	myRouter.HandleFunc("/articles", ShowArticles)
+	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
+	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
 	http.ListenAndServe(":8080", myRouter)
 
 }
