@@ -27,7 +27,8 @@ func main() {
 func HandleRequest() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
-	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
+	myRouter.HandleFunc("/articles", ArticlesGet).Methods("GET")
+	myRouter.HandleFunc("/articles", ArticlesPost).Methods("POST")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -36,21 +37,12 @@ func ShowHomePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "this is the home page")
 }
 
-func ShowArticles(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode("This is GET method")
-	case "POST":
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("This is POST method")
-	case "DELETE":
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode("This is DELETE method")
-	default:
-		json.NewEncoder(w).Encode("Other methods")
-	}
-	//w.Header().Set("content-type", "application/json")
-	//w.WriteHeader(http.StatusAccepted)
-	//json.NewEncoder(w).Encode(Articles)
+func ArticlesGet(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(Articles)
+}
+
+func ArticlesPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "this is post method")
 }
