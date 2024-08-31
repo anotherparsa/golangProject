@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Article struct {
@@ -23,9 +25,10 @@ func main() {
 }
 
 func HandleRequest() {
-	http.HandleFunc("/", ShowHomePage)
-	http.HandleFunc("/articles", ShowArticles)
-	http.ListenAndServe(":8080", nil)
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", ShowHomePage)
+	myRouter.HandleFunc("/articles", ShowArticles)
+	http.ListenAndServe(":8080", myRouter)
 
 }
 
