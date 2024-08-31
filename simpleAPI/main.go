@@ -33,6 +33,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
 	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
+	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -69,5 +70,13 @@ func AddNewArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteArticle(w http.ResponseWriter, r *http.Request) {
-
+	inputs := mux.Vars(r)
+	articleId := inputs["id"]
+	for index, article := range Articles {
+		if article.ID == articleId {
+			Articles = append(Articles[:index], Articles[index+1:]...)
+		}
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Article has been deleted")
 }
