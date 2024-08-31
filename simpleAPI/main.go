@@ -10,6 +10,7 @@ import (
 )
 
 type Article struct {
+	ID          string
 	Title       string
 	Description string
 	Content     string
@@ -18,9 +19,10 @@ type Article struct {
 var Articles []Article
 
 func main() {
-	Articles = append(Articles, Article{Title: "test title1", Description: "test description1", Content: "test content1"})
-	Articles = append(Articles, Article{Title: "test title2", Description: "test description2", Content: "test content2"})
-	Articles = append(Articles, Article{Title: "test title3", Description: "test description3", Content: "test content3"})
+	Articles = append(Articles, Article{ID: "1", Title: "test title1", Description: "test description1", Content: "test content1"})
+	Articles = append(Articles, Article{ID: "2", Title: "test title2", Description: "test description2", Content: "test content2"})
+	Articles = append(Articles, Article{ID: "3", Title: "test title3", Description: "test description3", Content: "test content3"})
+	Articles = append(Articles, Article{ID: "4", Title: "test title3", Description: "test description3", Content: "test content3"})
 
 	HandleRequest()
 }
@@ -30,6 +32,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
 	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
 	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
+	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -44,6 +47,17 @@ func ShowArticles(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Articles)
 }
 
+func ShowArticle(w http.ResponseWriter, r *http.Request) {
+	inputs := mux.Vars(r)
+	articleID := inputs["id"]
+	for _, article := range Articles {
+		if article.ID == articleID {
+			w.Header().Set("content-type", "application/json")
+			json.NewEncoder(w).Encode(article)
+		}
+	}
+}
+
 func AddNewArticle(w http.ResponseWriter, r *http.Request) {
 	RequestBody, _ := io.ReadAll(r.Body)
 	article := Article{}
@@ -51,5 +65,9 @@ func AddNewArticle(w http.ResponseWriter, r *http.Request) {
 	Articles = append(Articles, article)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("Article has been appended")
+
+}
+
+func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 
 }
