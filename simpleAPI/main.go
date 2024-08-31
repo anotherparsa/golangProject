@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -27,8 +28,8 @@ func main() {
 func HandleRequest() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
-	myRouter.HandleFunc("/articles", ArticlesGet).Methods("GET")
-	myRouter.HandleFunc("/articles", ArticlesPost).Methods("POST")
+	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
+	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -37,12 +38,18 @@ func ShowHomePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "this is the home page")
 }
 
-func ArticlesGet(w http.ResponseWriter, r *http.Request) {
+func ShowArticles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(Articles)
 }
 
-func ArticlesPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "this is post method")
+func AddNewArticle(w http.ResponseWriter, r *http.Request) {
+	RequestBody, _ := io.ReadAll(r.Body)
+	article := Article{}
+	_ = json.Unmarshal(RequestBody, &article)
+	Articles = append(Articles, article)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode("Article has been appended")
+
 }
