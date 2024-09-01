@@ -42,6 +42,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
 	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
+	fmt.Println("testusername", "testusersid", "testuserid", "testsecret")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -89,8 +90,16 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Article has been deleted")
 }
 
-func CreateToken(username string, usersid string, userId string, secretkey []byte) (string, error) {
+func CreateToken(username string, usersid string, userId string, secretkey []byte) {
 	expirationTime := time.Now().Add(5 * time.Minute).Unix()
-	Claims := Claims{Username: "testusername", UsersId: "testusersid", UserId: "testuserid", Expires: expirationTime}
+	Claims := Claims{Username: username, UsersId: usersid, UserId: userId, Expires: expirationTime}
+	ClaimJson, err := json.Marshal(Claims)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(ClaimJson)
+	header := `{"alg": "HS256", "typ": "JWT"}`
+	headerJson := []byte(header)
+	
 
 }
