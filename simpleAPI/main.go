@@ -9,6 +9,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Claims struct {
+	Username string `json:"username"`
+	UsersId  string `json:"usersid`
+	UserId   string `json:"userid"`
+	Expires  int64  `json:"expire"`
+}
+
 type Article struct {
 	ID          string
 	Title       string
