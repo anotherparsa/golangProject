@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -86,4 +87,10 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode("Article has been deleted")
+}
+
+func CreateToken(username string, usersid string, userId string, secretkey []byte) (string, error) {
+	expirationTime := time.Now().Add(5 * time.Minute).Unix()
+	Claims := Claims{Username: "testusername", UsersId: "testusersid", UserId: "testuserid", Expires: expirationTime}
+
 }
