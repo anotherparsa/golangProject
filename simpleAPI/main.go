@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -42,7 +43,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
 	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
-	fmt.Println("testusername", "testusersid", "testuserid", "testsecret")
+	CreateToken("testusername", "testusersid", "testuserid")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -90,16 +91,20 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Article has been deleted")
 }
 
-func CreateToken(username string, usersid string, userId string, secretkey []byte) {
+func CreateToken(username string, usersid string, userId string) {
 	expirationTime := time.Now().Add(5 * time.Minute).Unix()
 	Claims := Claims{Username: username, UsersId: usersid, UserId: userId, Expires: expirationTime}
-	ClaimJson, err := json.Marshal(Claims)
+	ClaimsJson, err := json.Marshal(Claims)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(ClaimJson)
+	fmt.Println(ClaimsJson)
 	header := `{"alg": "HS256", "typ": "JWT"}`
 	headerJson := []byte(header)
-	
+	headerEncoded := base64.RawURLEncoding.EncodeToString(headerJson)
+	claimsEncoded := base64.RawURLEncoding.EncodeToString(ClaimsJson)
+	fmt.Println("this")
+	fmt.Println(headerEncoded)
+	fmt.Println(claimsEncoded)
 
 }
