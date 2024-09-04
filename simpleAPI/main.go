@@ -91,20 +91,3 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Article has been deleted")
 }
 
-func CreateToken(username string, usersid string, userId string) {
-	expirationTime := time.Now().Add(5 * time.Minute).Unix()
-	Claims := Claims{Username: username, UsersId: usersid, UserId: userId, Expires: expirationTime}
-	ClaimsJson, err := json.Marshal(Claims)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(ClaimsJson)
-	header := `{"alg": "HS256", "typ": "JWT"}`
-	headerJson := []byte(header)
-	headerEncoded := base64.RawURLEncoding.EncodeToString(headerJson)
-	claimsEncoded := base64.RawURLEncoding.EncodeToString(ClaimsJson)
-	fmt.Println("this")
-	fmt.Println(headerEncoded)
-	fmt.Println(claimsEncoded)
-
-}
