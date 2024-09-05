@@ -1,12 +1,10 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -31,7 +29,7 @@ func main() {
 	Articles = append(Articles, Article{ID: "1", Title: "test title1", Description: "test description1", Content: "test content1"})
 	Articles = append(Articles, Article{ID: "2", Title: "test title2", Description: "test description2", Content: "test content2"})
 	Articles = append(Articles, Article{ID: "3", Title: "test title3", Description: "test description3", Content: "test content3"})
-	Articles = append(Articles, Article{ID: "4", Title: "test title3", Description: "test description3", Content: "test content3"})
+	Articles = append(Articles, Article{ID: "4", Title: "test title4", Description: "test description4", Content: "test content4"})
 
 	HandleRequest()
 }
@@ -43,7 +41,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
 	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
-	CreateToken("testusername", "testusersid", "testuserid")
+	myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -91,3 +89,20 @@ func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Article has been deleted")
 }
 
+func UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	inputs := mux.Vars(r)
+	articleId := inputs["id"]
+	RequestBody, _ := io.ReadAll(r.Body)
+	SingleArticle := Article{}
+	_ = json.Unmarshal(RequestBody, &SingleArticle)
+	for index, article := range Articles {
+		if article.ID == articleId {
+			Articles[index].Title = SingleArticle.Title
+			Articles[index].Description = SingleArticle.Description
+			Articles[index].Content = SingleArticle.Content
+			w.WriteHeader(http.StatusCreated)
+			json.NewEncoder(w).Encode("Article updated")
+		}
+	}
+
+}
