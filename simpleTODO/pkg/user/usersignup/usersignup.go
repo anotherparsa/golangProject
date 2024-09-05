@@ -57,7 +57,7 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 								if databasetools.ValidateUserInfoFormInputs("lastName", lastName) {
 									if databasetools.ValidateUserInfoFormInputs("email", email) {
 										if databasetools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
-											query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", username}}, [][]string{})
+											query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", username}}, [][]string{})
 											user := useruser.ReadUser(query, arguments)
 											//making sure there is no other user with this username
 											if len(user) == 0 {
@@ -69,10 +69,10 @@ func SignupProcessHandler(w http.ResponseWriter, r *http.Request) {
 												//setting the session_id cookie
 												http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 												//creating a user record in users table
-												query, arguments := databasetools.QuerryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", password}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}, {"rule", "user"}, {"suspended", "no"}})
+												query, arguments := databasetools.QueryMaker("insert", []string{"userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{}, [][]string{{"userId", userId}, {"username", username}, {"password", password}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}, {"rule", "user"}, {"suspended", "no"}})
 												useruser.CreateUser(query, arguments)
 												//creating a session record in sessions table
-												query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
+												query, arguments = databasetools.QueryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", userId}})
 												session.CreateSession(query, arguments)
 												//deleting csrft token cookie
 												http.SetCookie(w, &http.Cookie{Name: "signupcsrft", MaxAge: -1, Path: "/"})

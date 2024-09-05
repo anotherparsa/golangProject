@@ -28,7 +28,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 			//setting csrft cookie
 			http.SetCookie(w, &http.Cookie{Name: "createtaskcsrft", Value: csrft, HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 			//getting loged user tasks based of thier userId as the author of the tasks.
-			query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"author", userId}}, [][]string{})
+			query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"author", userId}}, [][]string{})
 			tasks := usertask.ReadTask(query, arguments)
 			data := dataToSend{Username: username, Userid: usersid, Tasks: tasks, CSRFT: csrft}
 			//parsing and executing the template

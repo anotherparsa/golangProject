@@ -31,7 +31,7 @@ func WhoIsThis(session_id string) (string, string, string, string, string) {
 	var rule string
 
 	//getting the userId of the logged user corresponding to the session_id
-	query, arguments := databasetools.QuerryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
+	query, arguments := databasetools.QueryMaker("select", []string{"userId"}, "sessions", [][]string{{"sessionId", session_id}}, [][]string{})
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +48,7 @@ func WhoIsThis(session_id string) (string, string, string, string, string) {
 		}
 	}
 	//getting user's id, user's username', user's rule and user's suspend status
-	query, arguments = databasetools.QuerryMaker("select", []string{"id", "username", "rule", "suspended"}, "users", [][]string{{"userId", user_id}}, [][]string{})
+	query, arguments = databasetools.QueryMaker("select", []string{"id", "username", "rule", "suspended"}, "users", [][]string{{"userId", user_id}}, [][]string{})
 	safequery, err = databasetools.DataBase.Prepare(query)
 	if err != nil {
 		fmt.Println(err)

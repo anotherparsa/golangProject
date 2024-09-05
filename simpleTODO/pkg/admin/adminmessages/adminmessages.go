@@ -9,7 +9,7 @@ import (
 )
 
 func AdminMessagesPageHandler(w http.ResponseWriter, r *http.Request) {
-	query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{})
+	query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{})
 	messages := GetMessages(query, arguments)
 	template, _ := template.ParseFiles("../../pkg/admin/adminmessages/template/adminmessages.html")
 	template.Execute(w, messages)

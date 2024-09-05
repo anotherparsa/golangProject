@@ -61,7 +61,7 @@ func UpdateUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		usersIdurl := strings.TrimPrefix(r.URL.Path, "/users/editaccount/")
 		//checking if the id of the logged user is same as the id in url path
 		if usersid == usersIdurl {
-			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"id", usersid}}, [][]string{})
+			Query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"id", usersid}}, [][]string{})
 			user := ReadUser(Query, arguments)
 			template, err := template.ParseFiles("../../pkg/user/useruser/template/useredituser.html")
 			if err != nil {
@@ -107,14 +107,14 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 										if databasetools.ValidateUserInfoFormInputs("email", email) {
 											if databasetools.ValidateUserInfoFormInputs("phoneNumber", phoneNumber) {
 												//getting user to edit
-												Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
+												Query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
 												user := ReadUser(Query, arguments)
 												//checking if it had any result or not
 												if len(user) == 1 {
 													//checkinf if the user entered a new password
 													if len(newpassword) != 0 {
 														if databasetools.ValidateTaskOrMessageInfoFormInputs("password", newpassword) {
-															Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", username}, {"password", tools.HashThis(newpassword)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
+															Query, arguments := databasetools.QueryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", username}, {"password", tools.HashThis(newpassword)}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
 															UpdateUser(Query, arguments)
 															http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
 															http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -124,7 +124,7 @@ func UpdateUserProcessor(w http.ResponseWriter, r *http.Request) {
 														}
 													} else {
 														//this means user didn't provide a new password
-														Query, arguments := databasetools.QuerryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", username}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
+														Query, arguments := databasetools.QueryMaker("update", []string{"username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"userId", loggedUser}}, [][]string{{"username", username}, {"firstName", firstName}, {"lastName", lastName}, {"email", email}, {"phoneNumber", phoneNumber}})
 														UpdateUser(Query, arguments)
 														http.SetCookie(w, &http.Cookie{Name: "updateusercsrft", MaxAge: -1})
 														http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -201,7 +201,7 @@ func DeleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		usersIdurl := strings.TrimPrefix(r.URL.Path, "/users/deleteaccount/")
 		//checking if the id of the logged user is same as the id in url path
 		if usersid == usersIdurl {
-			Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", usersid}}, [][]string{})
+			Query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", usersid}}, [][]string{})
 			user := ReadUser(Query, arguments)
 			template, err := template.ParseFiles("../../pkg/user/useruser/template/deleteuser.html")
 			if err != nil {
@@ -238,18 +238,18 @@ func DeleteUserProcessor(w http.ResponseWriter, r *http.Request) {
 						if databasetools.ValidateUserInfoFormInputs("username", username) {
 							if databasetools.ValidateUserInfoFormInputs("password", currentpassword) {
 								//getting user to edit
-								Query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
+								Query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"id", id}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
 								user := ReadUser(Query, arguments)
 								//checking if it had any result or not
 								if len(user) == 1 {
 									//deleting user from users table
-									Query, arguments := databasetools.QuerryMaker("delete", []string{}, "users", [][]string{{"username", username}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
+									Query, arguments := databasetools.QueryMaker("delete", []string{}, "users", [][]string{{"username", username}, {"userId", loggedUser}, {"password", tools.HashThis(currentpassword)}}, [][]string{})
 									DeleteUserInfo(Query, arguments)
 									//deleting user's task from tasks table
-									Query, arguments = databasetools.QuerryMaker("delete", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{})
+									Query, arguments = databasetools.QueryMaker("delete", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{})
 									DeleteUserInfo(Query, arguments)
 									//deleting user's sessions from sessions table
-									Query, arguments = databasetools.QuerryMaker("delete", []string{}, "sessions", [][]string{{"userId", loggedUser}}, [][]string{})
+									Query, arguments = databasetools.QueryMaker("delete", []string{}, "sessions", [][]string{{"userId", loggedUser}}, [][]string{})
 									DeleteUserInfo(Query, arguments)
 									http.SetCookie(w, &http.Cookie{Name: "deleteusercsrft", MaxAge: -1, Path: "/"})
 									http.SetCookie(w, &http.Cookie{Name: "createtaskcsrft", MaxAge: -1, Path: "/"})

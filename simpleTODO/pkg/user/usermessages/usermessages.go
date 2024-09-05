@@ -54,7 +54,7 @@ func CreateUserMessageProcessor(w http.ResponseWriter, r *http.Request) {
 							if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
 								if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 									//creating a message record in messages table
-									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{{"author", username}, {"priority", priority}, {"category", category}, {"title", title}, {"description", description}, {"status", "unfinished"}})
+									query, arguments := databasetools.QueryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "messages", [][]string{}, [][]string{{"author", username}, {"priority", priority}, {"category", category}, {"title", title}, {"description", description}, {"status", "unfinished"}})
 									CreateMessage(query, arguments)
 									http.SetCookie(w, &http.Cookie{Name: "createmessagecsrft", MaxAge: -1, Path: "/"})
 									http.Redirect(w, r, "/users/home", http.StatusSeeOther)

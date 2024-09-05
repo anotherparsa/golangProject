@@ -57,13 +57,13 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 								//generating a session_id
 								sessionId := tools.GenerateUUID()
 								//getting user to set a session_id corresponding to their userId
-								query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
+								query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "password", "firstName", "lastName", "email", "phoneNumber", "rule", "suspended"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
 								user := useruser.ReadUser(query, arguments)
 								if user[0].Suspended == "no" {
 									//setting the session_id cookie
 									http.SetCookie(w, &http.Cookie{Name: "session_id", Value: sessionId, Expires: time.Now().Add(time.Hour * 168), HttpOnly: true, Secure: true, SameSite: http.SameSiteStrictMode, Path: "/"})
 									//creating a session record in the session table
-									query, arguments = databasetools.QuerryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
+									query, arguments = databasetools.QueryMaker("insert", []string{"sessionId", "userId"}, "sessions", [][]string{}, [][]string{{"sessionId", sessionId}, {"userId", user[0].UserId}})
 									session.CreateSession(query, arguments)
 									//deleting csrft token cookie
 									http.SetCookie(w, &http.Cookie{Name: "logincsrft", MaxAge: -1, Path: "/"})
@@ -104,7 +104,7 @@ func LoginProcessHandler(w http.ResponseWriter, r *http.Request) {
 }
 func ValidateUser(username string, password string) bool {
 	//getting user based of thier provided username and password
-	query, arguments := databasetools.QuerryMaker("select", []string{"id", "userId", "username", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
+	query, arguments := databasetools.QueryMaker("select", []string{"id", "userId", "username", "firstName", "lastName", "email", "phoneNumber"}, "users", [][]string{{"username", username}, {"password", password}}, [][]string{})
 	user := useruser.ReadUser(query, arguments)
 	//that means there is a user with that username and that password.
 	return (len(user) != 0)

@@ -8,11 +8,11 @@ import (
 )
 
 func InitializeStaticsProcess() models.Static {
-	query, arguments := databasetools.QuerryMaker("select", []string{"id"}, "users", [][]string{}, [][]string{})
+	query, arguments := databasetools.QueryMaker("select", []string{"id"}, "users", [][]string{}, [][]string{})
 	totalusers := GetTotal(query, arguments)
-	query, arguments = databasetools.QuerryMaker("select", []string{"id"}, "messages", [][]string{}, [][]string{})
+	query, arguments = databasetools.QueryMaker("select", []string{"id"}, "messages", [][]string{}, [][]string{})
 	totalmessagesnumber := GetTotal(query, arguments)
-	query, arguments = databasetools.QuerryMaker("select", []string{"id"}, "tasks", [][]string{}, [][]string{})
+	query, arguments = databasetools.QueryMaker("select", []string{"id"}, "tasks", [][]string{}, [][]string{})
 	totaltasks := GetTotal(query, arguments)
 	data := models.Static{Totalusers: totalusers, Totaltasks: totaltasks, Totalmessages: totalmessagesnumber}
 	return data

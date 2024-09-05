@@ -21,6 +21,8 @@ func RoutingHandler(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.URL.Path
 	if urlPath == "/" {
 		userhome.HomePageHandler(w, r)
+		// why don't you use http.HandleFunc("/tasks/" for doing this logic?
+		// all of this logic should be handled by the router, IMO
 	} else if strings.HasPrefix(urlPath, "/tasks/") {
 		//dedicated to tasks
 		if urlPath == "/tasks/createtaskprocess" {

@@ -41,7 +41,7 @@ func CreateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 							if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
 								if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 									//creating a task record in tasks table
-									query, arguments := databasetools.QuerryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
+									query, arguments := databasetools.QueryMaker("insert", []string{"author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{}, [][]string{{"author", author}, {"priority", r.Form.Get("priority")}, {"category", r.Form.Get("category")}, {"title", r.Form.Get("title")}, {"description", r.Form.Get("description")}, {"status", "unfinished"}})
 									CreateTask(query, arguments)
 									http.SetCookie(w, &http.Cookie{Name: "createtaskcsrft", MaxAge: -1, Path: "/"})
 									http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -123,7 +123,7 @@ func UpdateTaskPageHandler(w http.ResponseWriter, r *http.Request) {
 		_, _, userId, _, _ := session.WhoIsThis(cookie.Value)
 		taskId := strings.TrimPrefix(r.URL.Path, "/tasks/edittask/")
 		//getting task to edit
-		Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskId}, {"author", userId}}, [][]string{})
+		Query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskId}, {"author", userId}}, [][]string{})
 		task := ReadTask(Query, arguments)
 		//checking if it had any result or not
 		if len(task) == 1 {
@@ -148,18 +148,18 @@ func ChangeTaskStatusProcessor(w http.ResponseWriter, r *http.Request) {
 		//getting the task id from url
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/changetaskstatus/")
 		//getting the task with that id and that userId as author
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
+		query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
 		task := ReadTask(query, arguments)
 		//checking if there was a task to meet those conditions.
 		if len(task) == 1 {
 			//updating task
 			if task[0].Status == "finished" {
-				query, arguments := databasetools.QuerryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "unfinished"}})
+				query, arguments := databasetools.QueryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "unfinished"}})
 				UpdateTask(query, arguments)
 				http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
 				http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
 			} else {
-				query, arguments := databasetools.QuerryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "finished"}})
+				query, arguments := databasetools.QueryMaker("update", []string{}, "tasks", [][]string{{"author", loggedUser}}, [][]string{{"status", "finished"}})
 				UpdateTask(query, arguments)
 				http.SetCookie(w, &http.Cookie{Name: "adminupdateusercsrft", MaxAge: -1, Path: "/"})
 				http.Redirect(w, r, "/admin/home", http.StatusSeeOther)
@@ -197,11 +197,11 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 								if databasetools.ValidateTaskOrMessageInfoFormInputs("title", title) {
 									if databasetools.ValidateTaskOrMessageInfoFormInputs("description", description) {
 										//getting task to edit
-										Query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", id}, {"author", loggedUser}}, [][]string{})
+										Query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", id}, {"author", loggedUser}}, [][]string{})
 										task := ReadTask(Query, arguments)
 										//checking if it had any result or not
 										if len(task) == 1 {
-											Query, arguments := databasetools.QuerryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{{"priority", priority}, {"title", title}, {"description", description}, {"category", category}})
+											Query, arguments := databasetools.QueryMaker("update", []string{"priority", "title", "description", "category"}, "tasks", [][]string{{"id", r.Form.Get("id")}, {"author", loggedUser}}, [][]string{{"priority", priority}, {"title", title}, {"description", description}, {"category", category}})
 											UpdateTask(Query, arguments)
 											http.SetCookie(w, &http.Cookie{Name: "updatetaskcsrft", MaxAge: -1, Path: "/"})
 											http.Redirect(w, r, "/users/home", http.StatusSeeOther)
@@ -247,7 +247,7 @@ func UpdateTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//applying in the database
+// applying in the database
 func UpdateTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
@@ -259,8 +259,8 @@ func UpdateTask(query string, arguments []interface{}) {
 	}
 }
 
-//Delete
-//Deleting processor
+// Delete
+// Deleting processor
 func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	//check if session_id exist or not, that means if the user is logged in or not
@@ -270,12 +270,12 @@ func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 		//getting the task id from url
 		taskID := strings.TrimPrefix(r.URL.Path, "/tasks/deletetask/")
 		//getting the task with that id and that userId as author
-		query, arguments := databasetools.QuerryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
+		query, arguments := databasetools.QueryMaker("select", []string{"id", "author", "priority", "category", "title", "description", "status"}, "tasks", [][]string{{"id", taskID}, {"author", loggedUser}}, [][]string{})
 		task := ReadTask(query, arguments)
 		//checking if there was a task to meet those conditions.
 		if len(task) == 1 {
 			//deleting task
-			query, arguments = databasetools.QuerryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
+			query, arguments = databasetools.QueryMaker("delete", []string{"id"}, "tasks", [][]string{{"id", taskID}}, [][]string{})
 			DeleteTask(query, arguments)
 			http.Redirect(w, r, "/users/home", http.StatusSeeOther)
 		} else {
@@ -286,7 +286,7 @@ func DeleteTaskProcessor(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//applying in the database
+// applying in the database
 func DeleteTask(query string, arguments []interface{}) {
 	safequery, err := databasetools.DataBase.Prepare(query)
 	if err != nil {
