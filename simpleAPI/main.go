@@ -109,10 +109,14 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func Encode(w http.ResponseWriter, r *http.Request) {
+	//marshal == struct to byte array
+	//unmarshal == byte array to struct
 	A1 := Article{ID: "6", Title: "TestTitle"}
-
 	A1ByteArray, _ := json.Marshal(A1)
 	fmt.Println(A1ByteArray)
 	fmt.Println(string(A1ByteArray))
+	A2 := Article{}
+	_ = json.Unmarshal(A1ByteArray, &A2)
+	fmt.Println(A2)
 
 }
