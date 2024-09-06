@@ -137,6 +137,8 @@ func Decode(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(A1)
 }
 
+var authenticatedUsersMap = map[string]string{"testusername": "testpassword", "testusername2": "testpassword2"}
+
 func HttpBasicAuthentication(w http.ResponseWriter, r *http.Request) {
 	AF := AuthenticationFactors{}
 	_ = json.NewDecoder(r.Body).Decode(&AF)
@@ -144,4 +146,15 @@ func HttpBasicAuthentication(w http.ResponseWriter, r *http.Request) {
 	AFarray, _ := json.Marshal(AF)
 	fmt.Println(string(AFarray))
 	fmt.Println(base64.StdEncoding.EncodeToString(AFarray))
+	if authenticatedUsersMap[AF.Username] == AF.Password {
+		fmt.Println("you are authenticated")
+	} else {
+		fmt.Println("you are not authenticated")
+	}
+
+	//json in request body
+	//{"Username":"testusername","Password":"testpassword"}
+	//is authenticated
+	//{"Username":"testusername","Password":"testpassword"}
+	//is not authenticated
 }
