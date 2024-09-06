@@ -43,7 +43,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
 	myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
 	myRouter.HandleFunc("/encode", Encode).Methods("GET")
-
+	myRouter.HandleFunc("/decode", Decode).Methods("GET")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -121,4 +121,11 @@ func Encode(w http.ResponseWriter, r *http.Request) {
 	//encode function create a json representation of a struct and writes to the http response
 	_ = json.NewEncoder(w).Encode(A2)
 
+}
+
+func Decode(w http.ResponseWriter, r *http.Request) {
+	//decode function reads json data from http request and unmarshal it to struct type
+	A1 := Article{}
+	_ = json.NewDecoder(r.Body).Decode(&A1)
+	fmt.Println(A1)
 }
