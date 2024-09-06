@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,6 +22,11 @@ type Article struct {
 	Title       string
 	Description string
 	Content     string
+}
+
+type AuthenticationFactors struct {
+	Username string
+	Password string
 }
 
 var Articles []Article
@@ -44,6 +50,7 @@ func HandleRequest() {
 	myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
 	myRouter.HandleFunc("/encode", Encode).Methods("GET")
 	myRouter.HandleFunc("/decode", Decode).Methods("GET")
+	myRouter.HandleFunc("/basicauth", HttpBasicAuthentication).Methods("GET")
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -128,4 +135,13 @@ func Decode(w http.ResponseWriter, r *http.Request) {
 	A1 := Article{}
 	_ = json.NewDecoder(r.Body).Decode(&A1)
 	fmt.Println(A1)
+}
+
+func HttpBasicAuthentication(w http.ResponseWriter, r *http.Request) {
+	AF := AuthenticationFactors{}
+	_ = json.NewDecoder(r.Body).Decode(&AF)
+	fmt.Println(AF)
+	AFarray, _ := json.Marshal(AF)
+	fmt.Println(string(AFarray))
+	fmt.Println(base64.StdEncoding.EncodeToString(AFarray))
 }
