@@ -109,8 +109,8 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func Encode(w http.ResponseWriter, r *http.Request) {
-	//marshal == struct to byte array
-	//unmarshal == byte array to struct
+	//marshal == struct or any other data type to json encoded byte slice
+	//unmarshal == json encoded byte slice to struct or any other data type
 	A1 := Article{ID: "6", Title: "TestTitle"}
 	A1ByteArray, _ := json.Marshal(A1)
 	fmt.Println(A1ByteArray)
@@ -118,5 +118,7 @@ func Encode(w http.ResponseWriter, r *http.Request) {
 	A2 := Article{}
 	_ = json.Unmarshal(A1ByteArray, &A2)
 	fmt.Println(A2)
+	//encode function create a json representation of a struct and writes to the http response
+	_ = json.NewEncoder(w).Encode(A2)
 
 }
