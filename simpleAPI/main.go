@@ -42,6 +42,8 @@ func HandleRequest() {
 	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
 	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
 	myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
+	myRouter.HandleFunc("/encode", Encode).Methods("GET")
+
 	http.ListenAndServe(":8080", myRouter)
 
 }
@@ -104,5 +106,8 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode("Article updated")
 		}
 	}
+}
+
+func Encode(w http.ResponseWriter, r *http.Request) {
 
 }
