@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -42,25 +41,30 @@ func main() {
 }
 
 func HandleRequest() {
-	myServer := http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  time.Second * 10,
-		WriteTimeout: time.Second * 10,
-	}
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
-	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
-	myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
-	myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
-	myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
-	myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
-	myRouter.HandleFunc("/encode", Encode).Methods("GET")
-	myRouter.HandleFunc("/decode", Decode).Methods("GET")
-	myRouter.HandleFunc("/basicauth", HttpBasicAuthentication).Methods("GET")
-	err := myServer.ListenAndServe()
-	if err != nil {
-		fmt.Println(err)
-	}
+	//myServer := http.Server{
+	//	Addr:         ":8080",
+	//	ReadTimeout:  time.Second * 10,
+	//	WriteTimeout: time.Second * 10,
+	//}
+
+	MyRouter2 := http.NewServeMux()
+	MyRouter2.HandleFunc("/httpservemux", ShowHomePage)
+	http.ListenAndServe(":8080", MyRouter2)
+
+	//myRouter := mux.NewRouter().StrictSlash(true)
+	//myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
+	//myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
+	//myRouter.HandleFunc("/articles", AddNewArticle).Methods("POST")
+	//myRouter.HandleFunc("/article/{id}", ShowArticle).Methods("GET")
+	//myRouter.HandleFunc("/article/{id}", DeleteArticle).Methods("DELETE")
+	//myRouter.HandleFunc("/article/{id}", UpdateArticle).Methods("PUT")
+	//myRouter.HandleFunc("/encode", Encode).Methods("GET")
+	//myRouter.HandleFunc("/decode", Decode).Methods("GET")
+	//myRouter.HandleFunc("/basicauth", HttpBasicAuthentication).Methods("GET")
+	//err := myServer.ListenAndServe()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 }
 
