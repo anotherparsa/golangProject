@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -41,6 +42,11 @@ func main() {
 }
 
 func HandleRequest() {
+	myServer := http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
+	}
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", ShowHomePage).Methods("GET")
 	myRouter.HandleFunc("/articles", ShowArticles).Methods("GET")
@@ -51,7 +57,10 @@ func HandleRequest() {
 	myRouter.HandleFunc("/encode", Encode).Methods("GET")
 	myRouter.HandleFunc("/decode", Decode).Methods("GET")
 	myRouter.HandleFunc("/basicauth", HttpBasicAuthentication).Methods("GET")
-	http.ListenAndServe(":8080", myRouter)
+	err := myServer.ListenAndServe()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 }
 
